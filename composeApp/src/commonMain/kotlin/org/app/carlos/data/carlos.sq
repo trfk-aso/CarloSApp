@@ -1,5 +1,107 @@
--- Trip Table
-CREATE TABLE trip (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL
+CREATE TABLE expense (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  category TEXT NOT NULL,
+  title TEXT,
+  amount REAL NOT NULL,
+  date TEXT NOT NULL,
+  notes TEXT,
+  isFavoriteTemplate INTEGER NOT NULL DEFAULT 0,
+  planned INTEGER NOT NULL DEFAULT 0
 );
+
+totalForMonth:
+SELECT COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 7) = :yearMonth;
+
+totalForYear:
+SELECT COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 4) = :year;
+
+byCategoryForMonth:
+SELECT category, COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 7) = :yearMonth
+GROUP BY category;
+
+recentExpenses:
+SELECT *
+FROM expense
+ORDER BY date DESC
+LIMIT :limit;
+
+plannedExpenses:
+SELECT *
+FROM expense
+WHERE planned = 1
+  AND date > date('now')
+ORDER BY date ASC
+LIMIT :limit;
+
+insertExpense:
+INSERT INTO expense(
+  category,
+  title,
+  amount,
+  date,
+  notes,
+  isFavoriteTemplate,
+  planned
+) VALUES (
+  :category,
+  :title,
+  :amount,
+  :date,
+  :notes,
+  :isFavoriteTemplate,
+  :planned
+);
+
+updateExpense:
+UPDATE expense SET
+  category = :category,
+  title = :title,
+  amount = :amount,
+  date = :date,
+  notes = :notes,
+  isFavoriteTemplate = :isFavoriteTemplate,
+  planned = :planned
+WHERE id = :id;
+
+deleteById:
+DELETE FROM expense
+WHERE id = :id;
+
+selectById:
+SELECT * FROM expense WHERE id = :id;
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+byCategoryForYear:
+SELECT category, COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 4) = :year
+GROUP BY category;
+
+totalAll:
+SELECT COALESCE(SUM(amount), 0.0) AS total_
+FROM expense;
+
+byCategoryAll:
+SELECT category, COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+GROUP BY category;
+
+searchExpenses:
+SELECT *
+FROM expense
+WHERE (:query IS NULL OR (title LIKE '%' || :query || '%' OR notes LIKE '%' || :query || '%'))
+  AND (:categoriesSize = 0 OR (',' || :categories || ',') LIKE '%,' || category || ',%')
+  AND (:dateFrom IS NULL OR date >= :dateFrom)
+  AND (:dateTo IS NULL OR date <= :dateTo)
+  AND (:amountMin IS NULL OR amount >= :amountMin)
+  AND (:amountMax IS NULL OR amount <= :amountMax)
+ORDER BY date DESC;
+
