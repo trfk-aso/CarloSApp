@@ -120,7 +120,8 @@ fun ListScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ExposedDropdownMenuBox(
                 expanded = showSortMenu,
@@ -158,6 +159,10 @@ fun ListScreen(
                         )
                     }
                 }
+            }
+
+            if (showSortMenu) {
+                Spacer(modifier = Modifier.height(200.dp))
             }
 
             if (showFilters) {

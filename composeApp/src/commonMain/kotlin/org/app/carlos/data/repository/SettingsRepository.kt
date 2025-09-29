@@ -5,6 +5,10 @@ import com.russhwolf.settings.Settings
 interface SettingsRepository {
     suspend fun isFirstLaunch(): Boolean
     suspend fun setFirstLaunch(value: Boolean)
+
+    suspend fun getRecentSearches(): List<String>
+    suspend fun addRecentSearch(query: String)
+    suspend fun clearRecentSearches()
 }
 
 class SettingsRepositoryImpl(
@@ -17,5 +21,24 @@ class SettingsRepositoryImpl(
 
     override suspend fun setFirstLaunch(value: Boolean) {
         settings.putBoolean("first_launch", value)
+    }
+
+    override suspend fun getRecentSearches(): List<String> {
+        val serialized = settings.getString("recent_searches", "")
+        if (serialized.isBlank()) return emptyList()
+        return serialized.split("||").filter { it.isNotBlank() }
+    }
+
+    override suspend fun addRecentSearch(query: String) {
+        val current = getRecentSearches().toMutableList()
+        current.remove(query)
+        current.add(0, query)
+        val limited = current.take(5)
+        val serialized = limited.joinToString("||")
+        settings.putString("recent_searches", serialized)
+    }
+
+    override suspend fun clearRecentSearches() {
+        settings.putString("recent_searches", "")
     }
 }

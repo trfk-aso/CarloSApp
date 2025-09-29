@@ -20,7 +20,7 @@ val viewModule = module {
     viewModel { (savedStateHandle: SavedStateHandle) ->
         AddEditExpenseViewModel(get(), savedStateHandle)
     }
-    single { SearchViewModel(get()) }
+    single { SearchViewModel(get(), get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         ExpenseDetailsViewModel(get(), savedStateHandle)
     }

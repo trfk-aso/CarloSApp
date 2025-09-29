@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.app.carlos.data.model.Expense
 import org.app.carlos.data.repository.ExpenseRepository
+import org.app.carlos.data.repository.SettingsRepository
 
 data class SearchUiState(
     val results: List<Expense> = emptyList(),
@@ -27,11 +28,19 @@ enum class SortOrder(val label: String) {
 }
 
 class SearchViewModel(
-    private val repository: ExpenseRepository
+    private val repository: ExpenseRepository,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState
+
+    init {
+        viewModelScope.launch {
+            val saved = settingsRepository.getRecentSearches()
+            _uiState.value = _uiState.value.copy(recentSearches = saved)
+        }
+    }
 
     fun search(
         query: String? = null,
@@ -50,11 +59,17 @@ class SearchViewModel(
                 amountMin = amountMin.toDoubleOrNull(),
                 amountMax = amountMax.toDoubleOrNull()
             )
+
+            if (!query.isNullOrBlank()) {
+                settingsRepository.addRecentSearch(query)
+                val updated = settingsRepository.getRecentSearches()
+                _uiState.value = _uiState.value.copy(recentSearches = updated)
+            }
+
             _uiState.value = _uiState.value.copy(
                 results = sort(results, _uiState.value.sortOrder),
                 isEmpty = results.isEmpty(),
-                title = if (categories.size == 1) "${categories.first()} Expenses" else "Expenses",
-                recentSearches = updateRecent(query)
+                title = if (categories.size == 1) "${categories.first()} Expenses" else "Expenses"
             )
         }
     }

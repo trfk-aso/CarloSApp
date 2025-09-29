@@ -254,21 +254,11 @@ fun SearchScreen(
 
                 Text("Recent searches", fontWeight = FontWeight.SemiBold)
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    uiState.recentSearches.forEach { recent ->
+                    uiState.recentSearches.take(5).forEach { recent ->
                         Row(
                             Modifier
                                 .fillMaxWidth()
-                                .clickable {
-                                    searchQuery = recent
-                                    searchViewModel.search(
-                                        query = recent,
-                                        categories = selectedCategories,
-                                        dateFrom = dateFrom,
-                                        dateTo = dateTo,
-                                        amountMin = amountMin,
-                                        amountMax = amountMax
-                                    )
-                                }
+                                .clickable { searchQuery = recent }
                                 .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -301,20 +291,20 @@ fun SearchScreen(
                         }
                     }
                 } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        uiState.results.forEach { expense ->
-                            Row(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(Icons.Default.AttachMoney, contentDescription = null)
-                                Spacer(Modifier.width(8.dp))
-                                Text("${expense.title} - ${expense.amount}")
-                            }
-                        }
-                    }
+//                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                        uiState.results.forEach { expense ->
+//                            Row(
+//                                Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(8.dp),
+//                                verticalAlignment = Alignment.CenterVertically
+//                            ) {
+//                                Icon(Icons.Default.AttachMoney, contentDescription = null)
+//                                Spacer(Modifier.width(8.dp))
+//                                Text("${expense.title} - ${expense.amount}")
+//                            }
+//                        }
+//                    }
                 }
             }
         }
