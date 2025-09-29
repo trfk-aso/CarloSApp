@@ -4,70 +4,49 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 import org.app.carlos.data.model.Expense
 import org.app.carlos.data.repository.ExpenseRepository
 
-data class SearchUiState(
-    val results: List<Expense> = emptyList(),
-    val isEmpty: Boolean = false,
-    val recentSearches: List<String> = emptyList(),
+data class ListUiState(
+    val expenses: List<Expense> = emptyList(),
     val sortOrder: SortOrder = SortOrder.DateDesc,
+    val isEmpty: Boolean = false,
     val showDeleteDialog: Boolean = false,
     val expenseToDelete: Expense? = null,
     val title: String = "Expenses"
 )
 
-enum class SortOrder(val label: String) {
-    DateDesc("Date ↓ (newest)"),
-    DateAsc("Date ↑ (oldest)"),
-    AmountDesc("Amount ↓ (highest)"),
-    AmountAsc("Amount ↑ (lowest)")
-}
-
-class SearchViewModel(
+class ListViewModel(
     private val repository: ExpenseRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(SearchUiState())
-    val uiState: StateFlow<SearchUiState> = _uiState
+    private val _uiState = MutableStateFlow(ListUiState())
+    val uiState: StateFlow<ListUiState> = _uiState
 
-    fun search(
+    fun loadExpenses(
         query: String? = null,
         categories: Set<String> = emptySet(),
-        dateFrom: LocalDate? = null,
-        dateTo: LocalDate? = null,
-        amountMin: String = "",
-        amountMax: String = ""
+        dateFrom: String? = null,
+        dateTo: String? = null,
+        amountMin: Double? = null,
+        amountMax: Double? = null
     ) {
         viewModelScope.launch {
-            val results = repository.searchExpenses(
-                query = query.takeIf { !it.isNullOrBlank() },
-                categories = categories,
-                dateFrom = dateFrom?.toString(),
-                dateTo = dateTo?.toString(),
-                amountMin = amountMin.toDoubleOrNull(),
-                amountMax = amountMax.toDoubleOrNull()
-            )
+            val results = repository.searchExpenses(query, categories, dateFrom, dateTo, amountMin, amountMax)
             _uiState.value = _uiState.value.copy(
-                results = sort(results, _uiState.value.sortOrder),
+                expenses = sort(results, _uiState.value.sortOrder),
                 isEmpty = results.isEmpty(),
-                title = if (categories.size == 1) "${categories.first()} Expenses" else "Expenses",
-                recentSearches = updateRecent(query)
+                title = if (categories.size == 1) "${categories.first()} Expenses" else "Expenses"
             )
         }
     }
 
-    private fun updateRecent(query: String?): List<String> {
-        if (query.isNullOrBlank()) return _uiState.value.recentSearches
-        val updated = listOf(query) + _uiState.value.recentSearches
-        return updated.distinct().take(5)
-    }
-
     fun changeSort(order: SortOrder) {
-        val sorted = sort(_uiState.value.results, order)
-        _uiState.value = _uiState.value.copy(results = sorted, sortOrder = order)
+        val sorted = sort(_uiState.value.expenses, order)
+        _uiState.value = _uiState.value.copy(expenses = sorted, sortOrder = order)
     }
 
     private fun sort(list: List<Expense>, order: SortOrder): List<Expense> =
@@ -96,9 +75,9 @@ class SearchViewModel(
         val expense = _uiState.value.expenseToDelete ?: return
         viewModelScope.launch {
             repository.deleteById(expense.id!!)
-            val updated = _uiState.value.results.filter { it.id != expense.id }
+            val updated = _uiState.value.expenses.filter { it.id != expense.id }
             _uiState.value = _uiState.value.copy(
-                results = updated,
+                expenses = updated,
                 isEmpty = updated.isEmpty(),
                 showDeleteDialog = false,
                 expenseToDelete = null

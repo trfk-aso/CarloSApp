@@ -119,6 +119,7 @@ fun SearchScreen(
                                     amountMax = amountMax
                                 )
                             }
+                            navController.navigate(Screen.List.route)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFD700)),
                         modifier = Modifier

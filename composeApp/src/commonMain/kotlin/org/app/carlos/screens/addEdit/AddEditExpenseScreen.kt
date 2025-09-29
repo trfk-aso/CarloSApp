@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import org.app.carlos.screens.calenda.CalendarView
 import org.app.carlos.viewModel.AddEditExpenseViewModel
 import org.app.carlos.viewModel.HomeViewModel
+import org.app.carlos.viewModel.SearchViewModel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +50,8 @@ import org.koin.compose.koinInject
 fun AddEditExpenseScreen(
     navController: NavController,
     viewModel: AddEditExpenseViewModel = koinInject(),
-    homeViewModel: HomeViewModel = koinInject()
+    homeViewModel: HomeViewModel = koinInject(),
+    searchViewModel: SearchViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showCalendar by remember { mutableStateOf(false) }
@@ -83,6 +85,7 @@ fun AddEditExpenseScreen(
                     onClick = {
                         viewModel.saveExpense()
                         homeViewModel.refreshData()
+                        searchViewModel.search()
                         navController.previousBackStackEntry
                             ?.savedStateHandle
                             ?.set("refreshExpenseId", uiState.id)

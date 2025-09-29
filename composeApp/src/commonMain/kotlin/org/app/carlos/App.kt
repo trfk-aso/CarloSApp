@@ -27,6 +27,7 @@ import org.app.carlos.screens.Screen
 import org.app.carlos.screens.addEdit.AddEditExpenseScreen
 import org.app.carlos.screens.details.ExpenseDetailsScreen
 import org.app.carlos.screens.home.HomeScreen
+import org.app.carlos.screens.list.ListScreen
 import org.app.carlos.screens.onboarding.OnboardingScreen
 import org.app.carlos.screens.search.SearchScreen
 import org.app.carlos.screens.splash.SplashScreen
@@ -48,11 +49,13 @@ fun App() {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Onboarding.route) { OnboardingScreen(navController) }
             composable(
-                route = "${Screen.AddEditExpense.route}/{expenseId}",
-                arguments = listOf(navArgument("expenseId") {
-                    type = NavType.LongType
-                    defaultValue = -1L
-                })
+                route = Screen.AddEditExpense.route + "?expenseId={expenseId}",
+                arguments = listOf(
+                    navArgument("expenseId") {
+                        type = NavType.LongType
+                        defaultValue = -1L
+                    }
+                )
             ) { backStackEntry ->
                 val viewModel: AddEditExpenseViewModel = koinViewModel(
                     parameters = { parametersOf(backStackEntry.savedStateHandle) }
@@ -73,6 +76,7 @@ fun App() {
                 )
                 ExpenseDetailsScreen(navController, viewModel)
             }
+            composable(Screen.List.route) { ListScreen(navController)  }
 
         }
 }

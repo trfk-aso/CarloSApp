@@ -80,14 +80,12 @@ fun ExpenseDetailsScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        val idToEdit = uiState.id
-                        println("Editing expense, id from UI state: $idToEdit")
+                        val idToEdit = uiState.id ?: return@IconButton
+                        println("Editing expense, id: $idToEdit")
 
-                        navController.navigate(Screen.AddEditExpense.createRoute(idToEdit)) {
+                        navController.navigate("${Screen.AddEditExpense.route}?expenseId=$idToEdit") {
                             launchSingleTop = true
                         }
-
-                        println("Navigated to: ${Screen.AddEditExpense.createRoute(idToEdit)}")
                     }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }

@@ -73,7 +73,7 @@ fun HomeScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate(Screen.AddEditExpense.route) }) {
+                    IconButton(onClick = { navController.navigate("${Screen.AddEditExpense.route}?expenseId=-1") }) {
                         Icon(Icons.Default.Add, contentDescription = "Add Expense")
                     }
                 }
@@ -93,7 +93,7 @@ fun HomeScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("No expenses yet", style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(16.dp))
-                    Button(onClick = { navController.navigate(Screen.AddEditExpense.route) }) {
+                    Button(onClick = { navController.navigate("${Screen.AddEditExpense.route}?expenseId=-1") }) {
                         Text("Add your first expense")
                     }
                 }
@@ -147,7 +147,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Button(onClick = { navController.navigate(Screen.AddEditExpense.route) }) { Text("+ Expense") }
+                        Button(onClick = { navController.navigate("${Screen.AddEditExpense.route}?expenseId=-1") }) { Text("+ Expense") }
                         Button(onClick = { /* Statistics */ }) { Text("Statistics") }
                         Button(onClick = { /* History */ }) { Text("History") }
                     }

@@ -6,6 +6,7 @@ import org.app.carlos.viewModel.AddEditExpenseUiState
 import org.app.carlos.viewModel.AddEditExpenseViewModel
 import org.app.carlos.viewModel.ExpenseDetailsViewModel
 import org.app.carlos.viewModel.HomeViewModel
+import org.app.carlos.viewModel.ListViewModel
 import org.app.carlos.viewModel.SearchViewModel
 import org.app.carlos.viewModel.SplashViewModel
 import org.koin.core.module.dsl.viewModel
@@ -23,4 +24,5 @@ val viewModule = module {
     viewModel { (savedStateHandle: SavedStateHandle) ->
         ExpenseDetailsViewModel(get(), savedStateHandle)
     }
+    single { ListViewModel(get()) }
 }
