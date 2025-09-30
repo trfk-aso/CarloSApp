@@ -45,6 +45,7 @@ import org.app.carlos.viewModel.FavoritesViewModel
 import org.app.carlos.viewModel.HistoryViewModel
 import org.app.carlos.viewModel.HomeViewModel
 import org.app.carlos.viewModel.SearchViewModel
+import org.app.carlos.viewModel.StatisticsViewModel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +56,8 @@ fun AddEditExpenseScreen(
     homeViewModel: HomeViewModel = koinInject(),
     searchViewModel: SearchViewModel = koinInject(),
     favoritesViewModel: FavoritesViewModel = koinInject(),
-    historyViewModel: HistoryViewModel = koinInject()
+    historyViewModel: HistoryViewModel = koinInject(),
+    statisticsViewModel: StatisticsViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showCalendar by remember { mutableStateOf(false) }
@@ -92,6 +94,7 @@ fun AddEditExpenseScreen(
                         searchViewModel.search()
                         favoritesViewModel.loadFavorites()
                         historyViewModel.refresh()
+                        statisticsViewModel.refreshData()
                         navController.previousBackStackEntry
                             ?.savedStateHandle
                             ?.set("refreshExpenseId", uiState.id)

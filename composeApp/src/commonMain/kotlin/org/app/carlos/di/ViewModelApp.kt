@@ -11,6 +11,7 @@ import org.app.carlos.viewModel.HomeViewModel
 import org.app.carlos.viewModel.ListViewModel
 import org.app.carlos.viewModel.SearchViewModel
 import org.app.carlos.viewModel.SplashViewModel
+import org.app.carlos.viewModel.StatisticsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -29,4 +30,5 @@ val viewModule = module {
     single { ListViewModel(get()) }
     single { FavoritesViewModel(get()) }
     single { HistoryViewModel(get()) }
+    single { StatisticsViewModel(get()) }
 }
