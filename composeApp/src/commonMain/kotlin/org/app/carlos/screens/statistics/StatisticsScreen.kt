@@ -58,7 +58,6 @@ fun StatisticsScreen(
     searchViewModel: SearchViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -79,48 +78,52 @@ fun StatisticsScreen(
                 )
                 .padding(padding)
         ) {
-            if (!uiState.hasData) {
-                Column(
-                    Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        Icons.Default.BarChart,
-                        contentDescription = null,
-                        tint = Color.Gray,
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text("Not enough data for statistics.", color = Color.Gray)
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    item {
-                        Column {
-                            Text(
-                                "Statistics",
-                                color = Color.White,
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    Column {
+                        Text(
+                            "Statistics",
+                            color = Color.White,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
 
-                            PeriodSelector(
-                                selectedPeriod = uiState.period,
-                                selectedYear = uiState.selectedYear,
-                                selectedMonth = YearMonth(uiState.selectedYear, uiState.selectedMonth),
-                                onPeriodChange = { viewModel.changePeriod(it) },
-                                onMonthChange = { ym -> viewModel.changeMonth(ym.year, ym.month) },
-                                onYearChange = { y -> viewModel.changeYear(y) }
+                        PeriodSelector(
+                            selectedPeriod = uiState.period,
+                            selectedYear = uiState.selectedYear,
+                            selectedMonth = YearMonth(uiState.selectedYear, uiState.selectedMonth),
+                            onPeriodChange = { viewModel.changePeriod(it) },
+                            onMonthChange = { ym -> viewModel.changeMonth(ym.year, ym.month) },
+                            onYearChange = { y -> viewModel.changeYear(y) }
+                        )
+                    }
+                }
+
+                if (!uiState.hasData) {
+                    item {
+                        Column(
+                            Modifier
+                                .fillMaxSize()
+                                .padding(top = 64.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.BarChart,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(64.dp)
                             )
+                            Spacer(Modifier.height(8.dp))
+                            Text("Not enough data for statistics.", color = Color.Gray)
                         }
                     }
-
+                } else {
                     item {
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -147,7 +150,8 @@ fun StatisticsScreen(
                                     BarChartComposable(data = uiState.monthlyTrend) { month ->
                                         scope.launch {
                                             val startOfMonth = LocalDate(uiState.selectedYear, month, 1)
-                                            val endOfMonth = startOfMonth.plus(DatePeriod(months = 1)).minus(DatePeriod(days = 1))
+                                            val endOfMonth = startOfMonth.plus(DatePeriod(months = 1))
+                                                .minus(DatePeriod(days = 1))
 
                                             searchViewModel.search(
                                                 query = null,
@@ -183,7 +187,8 @@ fun StatisticsScreen(
                                     BarChartComposable(data = monthData) { month ->
                                         scope.launch {
                                             val startOfMonth = LocalDate(uiState.selectedYear, month, 1)
-                                            val endOfMonth = startOfMonth.plus(DatePeriod(months = 1)).minus(DatePeriod(days = 1))
+                                            val endOfMonth = startOfMonth.plus(DatePeriod(months = 1))
+                                                .minus(DatePeriod(days = 1))
 
                                             searchViewModel.search(
                                                 query = null,
@@ -211,9 +216,7 @@ fun StatisticsScreen(
                                     Text("Monthly Trend (All time)", color = Color.White)
                                     Spacer(Modifier.height(8.dp))
 
-                                    val allData = uiState.monthlyTrend
-
-                                    BarChartComposable(data = allData) { month ->
+                                    BarChartComposable(data = uiState.monthlyTrend) { _ ->
                                         scope.launch {
                                             searchViewModel.search(
                                                 query = null,
