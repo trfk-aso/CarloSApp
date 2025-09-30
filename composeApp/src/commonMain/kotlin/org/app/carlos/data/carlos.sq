@@ -28,6 +28,8 @@ GROUP BY category;
 recentExpenses:
 SELECT *
 FROM expense
+WHERE planned = 0
+  AND date <= date('now')
 ORDER BY date DESC
 LIMIT :limit;
 
@@ -104,4 +106,9 @@ WHERE (:query IS NULL OR (title LIKE '%' || :query || '%' OR notes LIKE '%' || :
   AND (:amountMin IS NULL OR amount >= :amountMin)
   AND (:amountMax IS NULL OR amount <= :amountMax)
 ORDER BY date DESC;
+
+updateFavoriteTemplateFlag:
+UPDATE expense
+SET isFavoriteTemplate = :flag
+WHERE id = :id;
 

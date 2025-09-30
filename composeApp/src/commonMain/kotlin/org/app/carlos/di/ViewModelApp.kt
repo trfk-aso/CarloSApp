@@ -5,6 +5,7 @@ import com.russhwolf.settings.Settings
 import org.app.carlos.viewModel.AddEditExpenseUiState
 import org.app.carlos.viewModel.AddEditExpenseViewModel
 import org.app.carlos.viewModel.ExpenseDetailsViewModel
+import org.app.carlos.viewModel.FavoritesViewModel
 import org.app.carlos.viewModel.HomeViewModel
 import org.app.carlos.viewModel.ListViewModel
 import org.app.carlos.viewModel.SearchViewModel
@@ -25,4 +26,5 @@ val viewModule = module {
         ExpenseDetailsViewModel(get(), savedStateHandle)
     }
     single { ListViewModel(get()) }
+    single { FavoritesViewModel(get()) }
 }

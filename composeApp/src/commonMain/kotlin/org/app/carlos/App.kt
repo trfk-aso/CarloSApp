@@ -26,6 +26,7 @@ import carlosapp.composeapp.generated.resources.compose_multiplatform
 import org.app.carlos.screens.Screen
 import org.app.carlos.screens.addEdit.AddEditExpenseScreen
 import org.app.carlos.screens.details.ExpenseDetailsScreen
+import org.app.carlos.screens.favorites.FavoritesScreen
 import org.app.carlos.screens.home.HomeScreen
 import org.app.carlos.screens.list.ListScreen
 import org.app.carlos.screens.onboarding.OnboardingScreen
@@ -49,9 +50,13 @@ fun App() {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Onboarding.route) { OnboardingScreen(navController) }
             composable(
-                route = Screen.AddEditExpense.route + "?expenseId={expenseId}",
+                route = Screen.AddEditExpense.route + "?expenseId={expenseId}&fromTemplate={fromTemplate}",
                 arguments = listOf(
                     navArgument("expenseId") {
+                        type = NavType.LongType
+                        defaultValue = -1L
+                    },
+                    navArgument("fromTemplate") {
                         type = NavType.LongType
                         defaultValue = -1L
                     }
@@ -60,6 +65,7 @@ fun App() {
                 val viewModel: AddEditExpenseViewModel = koinViewModel(
                     parameters = { parametersOf(backStackEntry.savedStateHandle) }
                 )
+
                 AddEditExpenseScreen(
                     navController = navController,
                     viewModel = viewModel,
@@ -77,6 +83,7 @@ fun App() {
                 ExpenseDetailsScreen(navController, viewModel)
             }
             composable(Screen.List.route) { ListScreen(navController)  }
+            composable(Screen.Favorites.route) { FavoritesScreen(navController) }
 
         }
 }

@@ -35,11 +35,35 @@ class AddEditExpenseViewModel(
     val uiState: StateFlow<AddEditExpenseUiState> = _uiState
 
     init {
-        val expenseId: Long? = savedStateHandle["expenseId"]
-        loadExpense(expenseId)
+        val expenseId: Long? = savedStateHandle.get<Long>("expenseId")?.takeIf { it != -1L }
+        val fromTemplateId: Long? = savedStateHandle.get<Long>("fromTemplate")?.takeIf { it != -1L }
+
+        if (fromTemplateId != null) {
+            loadTemplate(fromTemplateId)
+        } else {
+            loadExpense(expenseId)
+        }
     }
 
-     fun loadExpense(id: Long?) {
+    fun loadTemplate(templateId: Long) {
+        viewModelScope.launch {
+            val template = repository.getById(templateId)
+            template?.let { t ->
+                _uiState.value = _uiState.value.copy(
+                    id = null,
+                    category = t.category,
+                    amount = 0.0,
+                    date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                    title = t.title,
+                    notes = t.notes,
+                    isFavoriteTemplate = false
+                )
+            }
+        }
+    }
+
+
+    fun loadExpense(id: Long?) {
         if (id == null) return
         viewModelScope.launch {
             val expense = repository.getById(id)

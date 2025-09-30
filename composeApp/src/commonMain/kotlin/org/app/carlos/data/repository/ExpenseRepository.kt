@@ -26,6 +26,7 @@ interface ExpenseRepository {
         amountMax: Double?
     ): List<Expense>
 
+    suspend fun deleteFavoriteTemplate(expenseId: Long)
 }
 
 class ExpenseRepositoryImpl(
@@ -116,6 +117,10 @@ class ExpenseRepositoryImpl(
             amountMin = amountMin,
             amountMax = amountMax
         ).executeAsList().map { it.toModel() }
+
+    override suspend fun deleteFavoriteTemplate(expenseId: Long) {
+        db.carlosQueries.updateFavoriteTemplateFlag(0, expenseId)
+    }
 }
 
 fun org.app.carlos.data.Expense.toModel(): Expense =
@@ -126,7 +131,7 @@ fun org.app.carlos.data.Expense.toModel(): Expense =
         amount = amount,
         date = date,
         notes = notes,
-        isFavoriteTemplate = isFavoriteTemplate == 1L,
+        isFavoriteTemplate = isFavoriteTemplate.toInt() == 1,
         planned = planned == 1L
     )
 
