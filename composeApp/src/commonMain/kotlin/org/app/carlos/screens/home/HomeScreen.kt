@@ -149,7 +149,7 @@ fun HomeScreen(
                     ) {
                         Button(onClick = { navController.navigate("${Screen.AddEditExpense.route}?expenseId=-1") }) { Text("+ Expense") }
                         Button(onClick = { /* Statistics */ }) { Text("Statistics") }
-                        Button(onClick = { /* History */ }) { Text("History") }
+                        Button(onClick = { navController.navigate(Screen.History.route) }) { Text("History") }
                     }
                 }
 
@@ -191,7 +191,7 @@ fun HomeScreen(
                     ) {
                         Text("Recent", style = MaterialTheme.typography.titleMedium)
                         TextButton(onClick = {
-                            // TODO: navigate to History screen
+                            navController.navigate(Screen.History.route)
                         }) {
                             Text("See all")
                         }

@@ -27,6 +27,7 @@ import org.app.carlos.screens.Screen
 import org.app.carlos.screens.addEdit.AddEditExpenseScreen
 import org.app.carlos.screens.details.ExpenseDetailsScreen
 import org.app.carlos.screens.favorites.FavoritesScreen
+import org.app.carlos.screens.history.HistoryScreen
 import org.app.carlos.screens.home.HomeScreen
 import org.app.carlos.screens.list.ListScreen
 import org.app.carlos.screens.onboarding.OnboardingScreen
@@ -84,6 +85,7 @@ fun App() {
             }
             composable(Screen.List.route) { ListScreen(navController)  }
             composable(Screen.Favorites.route) { FavoritesScreen(navController) }
+            composable(Screen.History.route) { HistoryScreen(navController) }
 
         }
 }

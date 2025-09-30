@@ -6,6 +6,7 @@ import org.app.carlos.viewModel.AddEditExpenseUiState
 import org.app.carlos.viewModel.AddEditExpenseViewModel
 import org.app.carlos.viewModel.ExpenseDetailsViewModel
 import org.app.carlos.viewModel.FavoritesViewModel
+import org.app.carlos.viewModel.HistoryViewModel
 import org.app.carlos.viewModel.HomeViewModel
 import org.app.carlos.viewModel.ListViewModel
 import org.app.carlos.viewModel.SearchViewModel
@@ -27,4 +28,5 @@ val viewModule = module {
     }
     single { ListViewModel(get()) }
     single { FavoritesViewModel(get()) }
+    single { HistoryViewModel(get()) }
 }
