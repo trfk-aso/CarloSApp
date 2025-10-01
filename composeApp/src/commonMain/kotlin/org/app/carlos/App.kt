@@ -24,6 +24,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import carlosapp.composeapp.generated.resources.Res
 import carlosapp.composeapp.generated.resources.compose_multiplatform
 import org.app.carlos.screens.Screen
+import org.app.carlos.screens.about.AboutScreen
 import org.app.carlos.screens.addEdit.AddEditExpenseScreen
 import org.app.carlos.screens.details.ExpenseDetailsScreen
 import org.app.carlos.screens.favorites.FavoritesScreen
@@ -32,6 +33,7 @@ import org.app.carlos.screens.home.HomeScreen
 import org.app.carlos.screens.list.ListScreen
 import org.app.carlos.screens.onboarding.OnboardingScreen
 import org.app.carlos.screens.search.SearchScreen
+import org.app.carlos.screens.settings.SettingsScreen
 import org.app.carlos.screens.splash.SplashScreen
 import org.app.carlos.screens.statistics.StatisticsScreen
 import org.app.carlos.viewModel.AddEditExpenseViewModel
@@ -88,6 +90,8 @@ fun App() {
             composable(Screen.Favorites.route) { FavoritesScreen(navController) }
             composable(Screen.History.route) { HistoryScreen(navController) }
             composable(Screen.Statistics.route) { StatisticsScreen(navController) }
+            composable(Screen.Settings.route) { SettingsScreen(navController) }
+            composable(Screen.About.route) { AboutScreen() }
 
         }
 }

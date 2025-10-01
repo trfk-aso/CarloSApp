@@ -27,6 +27,7 @@ interface ExpenseRepository {
     ): List<Expense>
 
     suspend fun deleteFavoriteTemplate(expenseId: Long)
+    suspend fun deleteAll()
 }
 
 class ExpenseRepositoryImpl(
@@ -120,6 +121,10 @@ class ExpenseRepositoryImpl(
 
     override suspend fun deleteFavoriteTemplate(expenseId: Long) {
         db.carlosQueries.updateFavoriteTemplateFlag(0, expenseId)
+    }
+
+    override suspend fun deleteAll() {
+        db.carlosQueries.deleteAllExpenses()
     }
 }
 

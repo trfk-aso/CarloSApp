@@ -83,7 +83,6 @@ fun HistoryScreen(
 
     val fileExporter = provideFileExporter()
 
-
     Scaffold(
         topBar = {
             TopAppBar(

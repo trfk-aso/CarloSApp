@@ -104,18 +104,13 @@ class StatisticsViewModel(
     }
 
     private fun prepareCategories(byCategoryList: List<CategoryTotal>): Map<String, Double> {
-        val topCategories = mutableMapOf<String, Double>()
-        val sorted = byCategoryList.sortedByDescending { it.total }
-
-        sorted.take(3).forEach { topCategories[it.category] = it.total }
-        if (sorted.size > 3) {
-            val otherTotal = sorted.drop(3).sumOf { it.total }
-            topCategories["Other"] = otherTotal
-        }
+        val categoryMap = byCategoryList.associate { it.category to it.total }.toMutableMap()
 
         val allCategories = listOf("Fuel", "Insurance", "Repair", "Other")
-        allCategories.forEach { cat -> if (!topCategories.containsKey(cat)) topCategories[cat] = 0.0 }
+        allCategories.forEach { cat ->
+            if (!categoryMap.containsKey(cat)) categoryMap[cat] = 0.0
+        }
 
-        return topCategories
+        return allCategories.associateWith { categoryMap[it] ?: 0.0 }
     }
 }

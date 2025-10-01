@@ -68,7 +68,7 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("Dashboard") },
                 navigationIcon = {
-                    IconButton(onClick = { /* TODO: open Settings */ }) {
+                    IconButton(onClick = { navController.navigate(Screen.Settings.route)}) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
                 },
@@ -148,7 +148,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(onClick = { navController.navigate("${Screen.AddEditExpense.route}?expenseId=-1") }) { Text("+ Expense") }
-                        Button(onClick = { /* Statistics */ }) { Text("Statistics") }
+                        Button(onClick = { navController.navigate(Screen.Statistics.route) }) { Text("Statistics") }
                         Button(onClick = { navController.navigate(Screen.History.route) }) { Text("History") }
                     }
                 }

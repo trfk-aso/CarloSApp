@@ -112,3 +112,7 @@ UPDATE expense
 SET isFavoriteTemplate = :flag
 WHERE id = :id;
 
+deleteAllExpenses:
+DELETE FROM expense;
+
+

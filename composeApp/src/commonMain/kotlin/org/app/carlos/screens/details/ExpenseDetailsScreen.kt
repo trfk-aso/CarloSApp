@@ -44,7 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.app.carlos.screens.Screen
 import org.app.carlos.viewModel.ExpenseDetailsViewModel
+import org.app.carlos.viewModel.FavoritesViewModel
+import org.app.carlos.viewModel.HistoryViewModel
 import org.app.carlos.viewModel.HomeViewModel
+import org.app.carlos.viewModel.SearchViewModel
+import org.app.carlos.viewModel.StatisticsViewModel
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +56,11 @@ import org.koin.compose.koinInject
 fun ExpenseDetailsScreen(
     navController: NavHostController,
     viewModel: ExpenseDetailsViewModel = koinInject(),
-    homeViewModel: HomeViewModel = koinInject()
+    homeViewModel: HomeViewModel = koinInject(),
+    searchViewModel: SearchViewModel = koinInject(),
+    favoritesViewModel: FavoritesViewModel = koinInject(),
+    historyViewModel: HistoryViewModel = koinInject(),
+    statisticsViewModel: StatisticsViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -152,6 +160,11 @@ fun ExpenseDetailsScreen(
                         homeViewModel.refreshData()
                         showDeleteDialog = false
                         navController.popBackStack()
+                        searchViewModel.search()
+                        searchViewModel.clearRecentSearches()
+                        favoritesViewModel.loadFavorites()
+                        historyViewModel.refresh()
+                        statisticsViewModel.refreshData()
                     }) {
                         Text("Delete", color = Color.Red)
                     }

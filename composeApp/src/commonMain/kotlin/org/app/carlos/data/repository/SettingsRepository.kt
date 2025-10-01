@@ -9,6 +9,9 @@ interface SettingsRepository {
     suspend fun getRecentSearches(): List<String>
     suspend fun addRecentSearch(query: String)
     suspend fun clearRecentSearches()
+
+    suspend fun getFuelUnit(): String
+    suspend fun setFuelUnit(value: String)
 }
 
 class SettingsRepositoryImpl(
@@ -40,5 +43,13 @@ class SettingsRepositoryImpl(
 
     override suspend fun clearRecentSearches() {
         settings.putString("recent_searches", "")
+    }
+
+    override suspend fun getFuelUnit(): String {
+        return settings.getString("fuel_unit", "Liters")
+    }
+
+    override suspend fun setFuelUnit(value: String) {
+        settings.putString("fuel_unit", value)
     }
 }

@@ -104,25 +104,34 @@ class HistoryViewModel(
 
     fun exportHistory(fileExporter: FileExporter) {
         viewModelScope.launch {
+            println("Export started")
+
             val state = _uiState.value
-            if (state.isEmpty) return@launch
+            if (state.isEmpty) {
+                println("No data to export")
+                return@launch
+            }
 
             val content = buildString {
+                println("Building export content")
                 state.groups.forEach { (ym, expenses) ->
                     appendLine("${ym}:")
                     expenses.forEach { exp ->
                         appendLine("${exp.date} | ${exp.category} | ${exp.title ?: ""} | ${exp.amount} | ${exp.notes ?: ""}")
+                        println("Appending expense: ${exp.date} | ${exp.category} | ${exp.amount}")
                     }
                     appendLine("Total: ${state.totals[ym] ?: 0.0}")
                     appendLine()
                 }
             }
 
-            val success = fileExporter.exportTextFile(
-                "History_${Clock.System.now().toEpochMilliseconds()}.txt",
-                content
-            )
+            println("Content built, starting file export")
+            val filename = "History_${Clock.System.now().toEpochMilliseconds()}.txt"
+            val success = fileExporter.exportTextFile(filename, content)
+            println("Export result for file '$filename': $success")
+
             onExportResult(success)
+            println("Export finished")
         }
     }
 

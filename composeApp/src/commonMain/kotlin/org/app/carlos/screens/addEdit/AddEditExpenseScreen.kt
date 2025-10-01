@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,6 +46,7 @@ import org.app.carlos.viewModel.FavoritesViewModel
 import org.app.carlos.viewModel.HistoryViewModel
 import org.app.carlos.viewModel.HomeViewModel
 import org.app.carlos.viewModel.SearchViewModel
+import org.app.carlos.viewModel.SettingsViewModel
 import org.app.carlos.viewModel.StatisticsViewModel
 import org.koin.compose.koinInject
 
@@ -57,9 +59,11 @@ fun AddEditExpenseScreen(
     searchViewModel: SearchViewModel = koinInject(),
     favoritesViewModel: FavoritesViewModel = koinInject(),
     historyViewModel: HistoryViewModel = koinInject(),
-    statisticsViewModel: StatisticsViewModel = koinInject()
+    statisticsViewModel: StatisticsViewModel = koinInject(),
+    settingsViewModel: SettingsViewModel = koinInject()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val settingsUiState by settingsViewModel.uiState.collectAsState()
     var showCalendar by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.id) {
@@ -124,16 +128,35 @@ fun AddEditExpenseScreen(
                 }
             }
 
-            OutlinedTextField(
-                value = if (uiState.amount == 0.0) "" else uiState.amount.toString(),
-                onValueChange = { viewModel.updateAmount(it) },
-                label = { Text("Amount") },
-                placeholder = { Text("0.00") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                isError = uiState.amount <= 0
-            )
-            if (uiState.amount <= 0) {
-                Text("Enter a valid amount", color = Color.Red, fontSize = 12.sp)
+            Column {
+                Text(
+                    text = if (uiState.category == "Fuel") {
+                        "Amount (${settingsUiState.fuelUnit})"
+                    } else {
+                        "Amount"
+                    },
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+
+                OutlinedTextField(
+                    value = if (uiState.amount == 0.0) "" else uiState.amount.toString(),
+                    onValueChange = { viewModel.updateAmount(it) },
+                    placeholder = { Text("$0.00") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    isError = uiState.amount <= 0,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                if (uiState.amount <= 0) {
+                    Text(
+                        "Enter a valid amount",
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
 
             Column {

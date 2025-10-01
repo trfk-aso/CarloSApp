@@ -93,6 +93,10 @@ class SearchViewModel(
             SortOrder.AmountAsc -> list.sortedBy { it.amount }
         }
 
+    fun clearRecentSearches() {
+        _uiState.value = _uiState.value.copy(recentSearches = emptyList())
+    }
+
     fun confirmDelete(expense: Expense) {
         _uiState.value = _uiState.value.copy(
             showDeleteDialog = true,
