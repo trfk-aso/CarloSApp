@@ -36,6 +36,7 @@ kotlin {
             implementation(libs.koin.androidx.compose)
         }
         commonMain.dependencies {
+            implementation("com.android.billingclient:billing-ktx:6.0.1")
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

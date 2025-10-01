@@ -7,8 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.app.carlos.data.repository.BillingRepository
 import org.app.carlos.data.repository.ExpenseRepository
+import org.app.carlos.data.repository.PurchaseResult
 import org.app.carlos.data.repository.SettingsRepository
+import org.app.carlos.data.repository.ThemeRepository
 
 data class ThemeUiState(
     val id: String,
@@ -29,7 +32,9 @@ data class SettingsUiState(
 
 class SettingsViewModel(
     private val repository: ExpenseRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val themeRepository: ThemeRepository,
+    private val billingRepository: BillingRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -41,14 +46,22 @@ class SettingsViewModel(
     }
 
     private fun loadThemes() {
-        // Заглушка, в реале можно подгружать из магазина или локально
-        val themes = listOf(
-            ThemeUiState(id = "default", name = "Default", isSelected = true, isPurchased = true),
-            ThemeUiState(id = "midnight", name = "Midnight", price = "$1.99"),
-            ThemeUiState(id = "solaris", name = "Solaris", price = "$2.99"),
-            ThemeUiState(id = "marine", name = "Marine", price = "$1.49")
-        )
-        _uiState.value = _uiState.value.copy(themes = themes)
+        viewModelScope.launch {
+            val themesFromDb = themeRepository.getAllThemes()
+            val currentThemeId = themeRepository.getCurrentThemeId()
+
+            val themesUi = themesFromDb.map { theme ->
+                ThemeUiState(
+                    id = theme.id,
+                    name = theme.name,
+                    price = theme.price?.let { "$$it" } ?: "",
+                    isSelected = theme.id == currentThemeId,
+                    isPurchased = theme.isPurchased
+                )
+            }
+
+            _uiState.value = _uiState.value.copy(themes = themesUi)
+        }
     }
 
     private fun loadPreferences() {
@@ -75,51 +88,58 @@ class SettingsViewModel(
 
     fun resetAllData() {
         viewModelScope.launch {
-            // Удаляем все расходы
             repository.deleteAll()
-            // Очищаем последние поисковые запросы
             settingsRepository.clearRecentSearches()
-            // Закрываем диалог
             hideResetDialog()
         }
     }
 
     fun buyTheme(themeId: String) {
-        // TODO: подключить покупку
         val updatedThemes = _uiState.value.themes.map {
             if (it.id == themeId) it.copy(isLoading = true) else it
         }
         _uiState.value = _uiState.value.copy(themes = updatedThemes)
 
-        // Заглушка: через 2 сек считаем, что покупка прошла
         viewModelScope.launch {
-            kotlinx.coroutines.delay(2000)
-            val newThemes = _uiState.value.themes.map {
-                when {
-                    it.id == themeId -> it.copy(isPurchased = true, isLoading = false)
-                    it.isSelected -> it.copy(isSelected = false)
-                    else -> it
+            val result = billingRepository.purchaseTheme(themeId)
+            when (result) {
+                is PurchaseResult.Success -> {
+                    themeRepository.markThemePurchased(themeId)
+                    themeRepository.setCurrentTheme(themeId)
+                    loadThemes()
+                }
+                is PurchaseResult.Failure -> {
+                    _uiState.value = _uiState.value.copy(
+                        themes = _uiState.value.themes.map {
+                            if (it.id == themeId) it.copy(isLoading = false, hasError = true) else it
+                        }
+                    )
+                }
+                is PurchaseResult.Error -> {
+                    _uiState.value = _uiState.value.copy(
+                        themes = _uiState.value.themes.map {
+                            if (it.id == themeId) it.copy(isLoading = false, hasError = true) else it
+                        }
+                    )
                 }
             }
-            _uiState.value = _uiState.value.copy(
-                themes = newThemes.map { if (it.id == themeId) it.copy(isSelected = true) else it },
-                showUnlockDialog = null
-            )
         }
     }
 
     fun useTheme(themeId: String) {
-        val updatedThemes = _uiState.value.themes.map {
-            it.copy(isSelected = it.id == themeId)
+        viewModelScope.launch {
+            themeRepository.setCurrentTheme(themeId)
+            loadThemes()
         }
-        _uiState.value = _uiState.value.copy(themes = updatedThemes)
     }
 
     fun restorePurchases() {
-        // TODO: интеграция с магазином
-        // Пока просто делаем все темы купленными
-        val updatedThemes = _uiState.value.themes.map { it.copy(isPurchased = true) }
-        _uiState.value = _uiState.value.copy(themes = updatedThemes)
+        viewModelScope.launch {
+            val result = billingRepository.restorePurchases()
+            if (result is PurchaseResult.Success) {
+                loadThemes()
+            }
+        }
     }
 
     fun showUnlockDialog(themeId: String) {

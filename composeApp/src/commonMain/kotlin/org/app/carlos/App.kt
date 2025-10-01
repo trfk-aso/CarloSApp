@@ -23,6 +23,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import carlosapp.composeapp.generated.resources.Res
 import carlosapp.composeapp.generated.resources.compose_multiplatform
+import org.app.carlos.data.repository.BillingRepository
+import org.app.carlos.data.repository.ExpenseRepository
+import org.app.carlos.data.repository.SettingsRepository
+import org.app.carlos.data.repository.ThemeRepository
 import org.app.carlos.screens.Screen
 import org.app.carlos.screens.about.AboutScreen
 import org.app.carlos.screens.addEdit.AddEditExpenseScreen
@@ -39,13 +43,29 @@ import org.app.carlos.screens.statistics.StatisticsScreen
 import org.app.carlos.viewModel.AddEditExpenseViewModel
 import org.app.carlos.viewModel.ExpenseDetailsViewModel
 import org.app.carlos.viewModel.HomeViewModel
+import org.app.carlos.viewModel.SettingsViewModel
+import org.koin.compose.getKoin
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun App() {
+fun App(
+    themeRepository: ThemeRepository,
+    billingRepository: BillingRepository
+) {
         val navController = rememberNavController()
+        val repository: ExpenseRepository = koinInject()
+        val settingsRepository: SettingsRepository = koinInject()
+
+    val settingsViewModel = remember {
+        SettingsViewModel(
+            repository = repository,
+            settingsRepository = settingsRepository,
+            themeRepository = themeRepository,
+            billingRepository = billingRepository
+        )
+    }
 
         NavHost(
             navController = navController,
@@ -73,7 +93,8 @@ fun App() {
                 AddEditExpenseScreen(
                     navController = navController,
                     viewModel = viewModel,
-                    homeViewModel = koinInject()
+                    homeViewModel = koinInject(),
+                    settingsViewModel = settingsViewModel
                 )
             }
             composable(Screen.Search.route) { SearchScreen(navController) }
@@ -90,8 +111,15 @@ fun App() {
             composable(Screen.Favorites.route) { FavoritesScreen(navController) }
             composable(Screen.History.route) { HistoryScreen(navController) }
             composable(Screen.Statistics.route) { StatisticsScreen(navController) }
-            composable(Screen.Settings.route) { SettingsScreen(navController) }
+            composable(Screen.Settings.route) {
+                SettingsScreen(
+                    navController = navController,
+                    viewModel = settingsViewModel,
+                    themeRepository = themeRepository
+                )
+            }
             composable(Screen.About.route) { AboutScreen() }
 
         }
 }
+

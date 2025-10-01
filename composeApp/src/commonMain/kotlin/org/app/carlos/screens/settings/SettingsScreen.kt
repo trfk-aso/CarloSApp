@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import org.app.carlos.data.repository.ThemeRepository
 import org.app.carlos.exporter.provideFileExporter
 import org.app.carlos.screens.Screen
 import org.app.carlos.viewModel.FavoritesViewModel
@@ -62,7 +63,8 @@ import org.koin.compose.koinInject
 @Composable
 fun SettingsScreen(
     navController: NavHostController,
-    viewModel: SettingsViewModel = koinInject(),
+    viewModel: SettingsViewModel,
+    themeRepository: ThemeRepository,
     historyViewModel: HistoryViewModel = koinInject(),
     homeViewModel: HomeViewModel = koinInject(),
     searchViewModel: SearchViewModel = koinInject(),

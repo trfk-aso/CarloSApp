@@ -9,6 +9,31 @@ CREATE TABLE expense (
   planned INTEGER NOT NULL DEFAULT 0
 );
 
+CREATE TABLE ThemeEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    isPurchased INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    previewRes TEXT,
+    primaryColor INTEGER,
+    splashText TEXT,
+    price REAL
+);
+
+CREATE TABLE CurrentThemeEntity (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT 1,
+    themeId TEXT NOT NULL,
+    FOREIGN KEY(themeId) REFERENCES ThemeEntity(id)
+);
+
+INSERT INTO ThemeEntity (id, name, isPurchased, type, previewRes, primaryColor, splashText, price)
+VALUES
+('default', 'Default', 1, 'free', 'bg_default', 4294967295, 'Track easy!', NULL),
+('midnight', 'Midnight', 0, 'paid', 'bg_midnight', 4278190080, 'Dark mode vibes!', 1.99),
+('solaris', 'Solaris', 0, 'paid', 'bg_solaris', 4294956800, 'Shine on!', 2.99),
+('marine', 'Marine', 0, 'paid', 'bg_marine', 4283782485, 'Fresh and cool!', 1.49);
+
+
 totalForMonth:
 SELECT COALESCE(SUM(amount), 0.0) AS total_
 FROM expense
@@ -114,5 +139,24 @@ WHERE id = :id;
 
 deleteAllExpenses:
 DELETE FROM expense;
+
+getThemes:
+SELECT * FROM ThemeEntity;
+
+getCurrentThemeId:
+SELECT themeId FROM CurrentThemeEntity WHERE id = 1;
+
+insertCurrentTheme:
+INSERT OR REPLACE INTO CurrentThemeEntity(id, themeId) VALUES (1, ?);
+
+purchaseTheme:
+UPDATE ThemeEntity
+SET isPurchased = 1
+WHERE id = ?;
+
+insertTheme:
+INSERT OR REPLACE INTO ThemeEntity(
+    id, name, isPurchased, type, previewRes, primaryColor, splashText, price
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 

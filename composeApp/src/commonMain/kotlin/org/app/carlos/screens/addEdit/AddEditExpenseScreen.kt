@@ -60,7 +60,7 @@ fun AddEditExpenseScreen(
     favoritesViewModel: FavoritesViewModel = koinInject(),
     historyViewModel: HistoryViewModel = koinInject(),
     statisticsViewModel: StatisticsViewModel = koinInject(),
-    settingsViewModel: SettingsViewModel = koinInject()
+    settingsViewModel: SettingsViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val settingsUiState by settingsViewModel.uiState.collectAsState()
