@@ -106,7 +106,7 @@ class SettingsViewModel(
                 is PurchaseResult.Success -> {
                     themeRepository.markThemePurchased(themeId)
                     themeRepository.setCurrentTheme(themeId)
-                    _uiState.update { it.copy(showUnlockDialog = null) } // закрываем диалог
+                    _uiState.update { it.copy(showUnlockDialog = null) }
                     loadThemes()
                 }
                 is PurchaseResult.Failure -> {
