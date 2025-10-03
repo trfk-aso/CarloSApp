@@ -18,19 +18,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.app.carlos.viewModel.ThemeUiState
 
 @Composable
 fun PieChartComposable(
     data: Map<String, Double>,
+    selectedTheme: ThemeUiState?,
     colors: Map<String, Color> = mapOf(
         "Fuel" to Color(0xFFFFC107),
         "Insurance" to Color(0xFFE91E63),
-        "Repair" to Color(0xFF3F51B5),
+        "Repair" to Color(0xFF37FFE6),
         "Other" to Color(0xFF9C27B0)
     )
 ) {
     val total = data.values.sum()
     val proportions = data.mapValues { if (total == 0.0) 0f else (it.value / total).toFloat() }
+
+    val textColor = when (selectedTheme?.id) {
+        "solaris" -> Color.Black
+        "default", "midnight", "marine" -> Color.White
+        else -> Color.White
+    }
 
     Row(
         Modifier.fillMaxWidth(),
@@ -50,7 +58,9 @@ fun PieChartComposable(
             }
         }
 
-        Column {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             data.forEach { (category, amount) ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
@@ -59,7 +69,10 @@ fun PieChartComposable(
                             .background(colors[category] ?: Color.Gray, CircleShape)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("$category: $${amount.toInt()} (${((amount / total) * 100).toInt()}%)", color = Color.White)
+                    Text(
+                        "$category: $${amount.toInt()} (${((amount / total) * 100).toInt()}%)",
+                        color = textColor
+                    )
                 }
             }
         }

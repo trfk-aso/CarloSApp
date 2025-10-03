@@ -30,17 +30,41 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import org.app.carlos.data.model.Expense
+import org.app.carlos.data.model.Theme
 import org.app.carlos.screens.Screen
+import org.app.carlos.viewModel.ThemeUiState
 import kotlin.math.round
 
 @Composable
 fun SwipeToDismissItem(
     expense: Expense,
     navController: NavHostController,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    selectedTheme: ThemeUiState?
 ) {
     var offsetX by remember { mutableStateOf(0f) }
     val animatedOffsetX by animateFloatAsState(targetValue = offsetX)
+
+    val rowBackground = when (selectedTheme?.id) {
+        "default" -> Color(0xFF4F6BFF)
+        "midnight" -> Color(0xFF1D1B49)
+        "solaris" -> Color(0xFFFFDE80)
+        "marine" -> Color(0xFF22272E)
+        else -> Color(0xFF4F6BFF)
+    }
+
+    val iconBackground = when (selectedTheme?.id) {
+        "default" -> Color(0xFF394FD2)
+        "midnight" -> Color(0xFF0E0C33)
+        "solaris" -> Color.Black
+        "marine" -> Color(0xFF0A0A0A)
+        else -> Color(0xFF394FD2)
+    }
+
+    val textColor = when (selectedTheme?.id) {
+        "solaris" -> Color.Black
+        else -> Color.White
+    }
 
     Box(
         Modifier
@@ -52,8 +76,6 @@ fun SwipeToDismissItem(
                             offsetX < -150f -> onDelete()
                             offsetX > 150f -> {
                                 val idToEdit = expense.id ?: return@detectHorizontalDragGestures
-                                println("Editing expense, id: $idToEdit")
-
                                 navController.navigate("${Screen.AddEditExpense.route}?expenseId=$idToEdit") {
                                     launchSingleTop = true
                                 }
@@ -67,6 +89,7 @@ fun SwipeToDismissItem(
                 }
             }
     ) {
+
         Row(
             Modifier
                 .matchParentSize()
@@ -96,8 +119,8 @@ fun SwipeToDismissItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset { IntOffset(animatedOffsetX.toInt(), 0) }
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .background(Color(0xFF2563EB), RoundedCornerShape(12.dp))
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+                .background(rowBackground, RoundedCornerShape(12.dp))
                 .clickable {
                     navController.navigate(Screen.Details.createRoute(expense.id!!))
                 }
@@ -112,25 +135,34 @@ fun SwipeToDismissItem(
                     "Repair" -> Icons.Default.Build
                     else -> Icons.Default.MoreHoriz
                 }
-                Icon(icon, contentDescription = null, tint = Color.White)
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(iconBackground, RoundedCornerShape(6.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(icon, contentDescription = null, tint = Color.White)
+                }
+
                 Spacer(Modifier.width(8.dp))
+
                 Column {
                     Text(
                         expense.title?.takeIf { it.isNotBlank() } ?: expense.category,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = textColor
                     )
                     Text(
                         expense.date,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF93C5FD)
+                        color = textColor.copy(alpha = 0.7f)
                     )
                 }
             }
             Text(
                 formatAmount(expense.amount),
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = textColor
             )
         }
     }

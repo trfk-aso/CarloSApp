@@ -20,25 +20,55 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.app.carlos.viewModel.ThemeUiState
 import kotlin.math.pow
 import kotlin.math.round
 
 @Composable
-fun AveragesSection(avgPerMonth: Double, averagesByCategory: Map<String, Double>) {
-    Column(Modifier.fillMaxWidth()) {
+fun AveragesSection(
+    avgPerMonth: Double,
+    averagesByCategory: Map<String, Double>,
+    selectedTheme: ThemeUiState?
+) {
+    val cardBackground = when (selectedTheme?.id) {
+        "default" -> Color(0xFF3E5CFF)
+        "midnight" -> Color(0xFF2C387B)
+        "solaris" -> Color(0xFFFFDCA5)
+        "marine" -> Color(0xFF22272E)
+        else -> Color(0xFF3E5CFF)
+    }
+
+    val textColor = when (selectedTheme?.id) {
+        "default", "midnight", "marine" -> Color.White
+        "solaris" -> Color.Black
+        else -> Color.White
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Card(
             Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF2563EB))
+            colors = CardDefaults.cardColors(containerColor = cardBackground)
         ) {
-            Text(
-                "Average per month: $${avgPerMonth.toDecimalString(2)}",
-                Modifier.padding(16.dp),
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Average per month: $${avgPerMonth.toDecimalString(2)}",
+                    color = textColor,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
+
         Spacer(Modifier.height(8.dp))
+
         FlowRow(
             maxItemsInEachRow = 2,
             modifier = Modifier.fillMaxWidth()
@@ -48,17 +78,24 @@ fun AveragesSection(avgPerMonth: Double, averagesByCategory: Map<String, Double>
                     Modifier
                         .padding(4.dp)
                         .weight(1f),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF2563EB))
+                    colors = CardDefaults.cardColors(containerColor = cardBackground)
                 ) {
                     Column(
-                        Modifier.padding(12.dp),
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Average $cat", color = Color.White)
+                        Text(
+                            "Average $cat",
+                            color = textColor,
+                            textAlign = TextAlign.Center
+                        )
                         Text(
                             "$${avg.toDecimalString(2)}",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold
+                            color = textColor,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

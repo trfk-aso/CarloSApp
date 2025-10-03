@@ -11,7 +11,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.navigation.NavHostController
 import carlosapp.composeapp.generated.resources.Res
 import carlosapp.composeapp.generated.resources.splash_background
+import carlosapp.composeapp.generated.resources.splash_marine
+import carlosapp.composeapp.generated.resources.splash_midnight
+import carlosapp.composeapp.generated.resources.splash_solaris
 import org.app.carlos.screens.Screen
+import org.app.carlos.viewModel.SettingsViewModel
 import org.app.carlos.viewModel.SplashViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -19,17 +23,28 @@ import org.koin.compose.koinInject
 @Composable
 fun SplashScreen(
     navController: NavHostController,
-    viewModel: SplashViewModel = koinInject()
+    splashViewModel: SplashViewModel = koinInject(),
+    settingsViewModel: SettingsViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val splashState by splashViewModel.uiState.collectAsState()
+    val settingsState by settingsViewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState.isFirstLaunch) {
-        viewModel.splashDelay(1L).collect {
-            if (uiState.isFirstLaunch) {
+    val selectedTheme = settingsState.themes.firstOrNull { it.isSelected }
+    val backgroundRes = when (selectedTheme?.id) {
+        "default" -> Res.drawable.splash_background
+        "midnight" -> Res.drawable.splash_midnight
+        "solaris" -> Res.drawable.splash_solaris
+        "marine" -> Res.drawable.splash_marine
+        else -> Res.drawable.splash_background
+    }
+
+    LaunchedEffect(splashState.isFirstLaunch) {
+        splashViewModel.splashDelay(1L).collect {
+            if (splashState.isFirstLaunch) {
                 navController.navigate(Screen.Onboarding.route) {
                     popUpTo(Screen.Splash.route) { inclusive = true }
                 }
-                viewModel.markLaunched()
+                splashViewModel.markLaunched()
             } else {
                 navController.navigate(Screen.Home.route) {
                     popUpTo(Screen.Splash.route) { inclusive = true }
@@ -39,7 +54,7 @@ fun SplashScreen(
     }
 
     Image(
-        painter = painterResource(Res.drawable.splash_background),
+        painter = painterResource(backgroundRes),
         contentDescription = "Splash Background",
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Crop

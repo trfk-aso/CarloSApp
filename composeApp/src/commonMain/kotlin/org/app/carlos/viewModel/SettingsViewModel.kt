@@ -106,6 +106,7 @@ class SettingsViewModel(
                 is PurchaseResult.Success -> {
                     themeRepository.markThemePurchased(themeId)
                     themeRepository.setCurrentTheme(themeId)
+                    _uiState.update { it.copy(showUnlockDialog = null) } // закрываем диалог
                     loadThemes()
                 }
                 is PurchaseResult.Failure -> {
@@ -150,3 +151,133 @@ class SettingsViewModel(
         _uiState.value = _uiState.value.copy(showUnlockDialog = null)
     }
 }
+
+//data class ThemeUiState(
+//    val id: String,
+//    val name: String,
+//    val price: String = "",
+//    val isSelected: Boolean = false,
+//    val isPurchased: Boolean = false,
+//    val isLoading: Boolean = false,
+//    val hasError: Boolean = false
+//)
+//
+//data class SettingsUiState(
+//    val themes: List<ThemeUiState> = emptyList(),
+//    val fuelUnit: String = "Liters",
+//    val showResetDialog: Boolean = false,
+//    val showUnlockDialog: String? = null
+//)
+//
+//class SettingsViewModel(
+//    private val repository: ExpenseRepository,
+//    private val settingsRepository: SettingsRepository,
+//    private val themeRepository: ThemeRepository
+//) : ViewModel() {
+//
+//    private val _uiState = MutableStateFlow(SettingsUiState())
+//    val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
+//
+//    init {
+//        loadThemes()
+//        loadPreferences()
+//    }
+//
+//    private fun loadThemes() {
+//        viewModelScope.launch {
+//            val themesFromDb = themeRepository.getAllThemes()
+//            val currentThemeId = themeRepository.getCurrentThemeId()
+//
+//            val themesUi = themesFromDb.map { theme ->
+//                ThemeUiState(
+//                    id = theme.id,
+//                    name = theme.name,
+//                    price = theme.price?.let { "$$it" } ?: "",
+//                    isSelected = theme.id == currentThemeId,
+//                    isPurchased = theme.isPurchased
+//                )
+//            }
+//
+//            _uiState.value = _uiState.value.copy(themes = themesUi)
+//        }
+//    }
+//
+//    private fun loadPreferences() {
+//        viewModelScope.launch {
+//            val unit = settingsRepository.getFuelUnit()
+//            _uiState.update { it.copy(fuelUnit = unit) }
+//        }
+//    }
+//
+//    fun setFuelUnit(unit: String) {
+//        _uiState.update { it.copy(fuelUnit = unit) }
+//        viewModelScope.launch {
+//            settingsRepository.setFuelUnit(unit)
+//        }
+//    }
+//
+//    fun showResetDialog() {
+//        _uiState.value = _uiState.value.copy(showResetDialog = true)
+//    }
+//
+//    fun hideResetDialog() {
+//        _uiState.value = _uiState.value.copy(showResetDialog = false)
+//    }
+//
+//    fun resetAllData() {
+//        viewModelScope.launch {
+//            repository.deleteAll()
+//            settingsRepository.clearRecentSearches()
+//            hideResetDialog()
+//        }
+//    }
+//
+//    fun buyTheme(themeId: String) {
+//        _uiState.update { state ->
+//            val updatedThemes = state.themes.map {
+//                if (it.id == themeId) it.copy(isPurchased = true, isSelected = true, isLoading = false, hasError = false)
+//                else it.copy(isSelected = false)
+//            }
+//            state.copy(
+//                themes = updatedThemes,
+//                showUnlockDialog = null
+//            )
+//        }
+//
+//        viewModelScope.launch {
+//            themeRepository.markThemePurchased(themeId)
+//            themeRepository.setCurrentTheme(themeId)
+//        }
+//    }
+//
+//    fun useTheme(themeId: String) {
+//        _uiState.update { state ->
+//            val updatedThemes = state.themes.map {
+//                it.copy(isSelected = it.id == themeId)
+//            }
+//            state.copy(themes = updatedThemes)
+//        }
+//
+//        viewModelScope.launch {
+//            themeRepository.setCurrentTheme(themeId)
+//        }
+//    }
+//
+//    fun restorePurchases() {
+//        _uiState.update { state ->
+//            val updatedThemes = state.themes.map {
+//                it.copy(isPurchased = true)
+//            }
+//            state.copy(themes = updatedThemes)
+//        }
+//    }
+//
+//    fun showUnlockDialog(themeId: String) {
+//        _uiState.value = _uiState.value.copy(showUnlockDialog = themeId)
+//    }
+//
+//    fun dismissUnlockDialog() {
+//        _uiState.value = _uiState.value.copy(showUnlockDialog = null)
+//    }
+//}
+//

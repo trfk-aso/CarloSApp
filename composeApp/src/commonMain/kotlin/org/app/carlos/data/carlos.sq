@@ -130,7 +130,7 @@ WHERE (:query IS NULL OR (title LIKE '%' || :query || '%' OR notes LIKE '%' || :
   AND (:dateTo IS NULL OR date <= :dateTo)
   AND (:amountMin IS NULL OR amount >= :amountMin)
   AND (:amountMax IS NULL OR amount <= :amountMax)
-ORDER BY date DESC;
+ORDER BY date DESC, id DESC;
 
 updateFavoriteTemplateFlag:
 UPDATE expense

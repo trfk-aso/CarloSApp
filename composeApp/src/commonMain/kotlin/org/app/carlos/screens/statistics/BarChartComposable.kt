@@ -26,11 +26,13 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.datetime.Month
+import org.app.carlos.viewModel.ThemeUiState
 
 @Composable
 fun BarChartComposable(
     data: Map<Int, Double>,
-    onBarClick: (Int) -> Unit
+    onBarClick: (Int) -> Unit,
+    selectedTheme: ThemeUiState?
 ) {
     val max = (data.values.maxOrNull() ?: 0.0).coerceAtLeast(1.0)
     val step = (max / 5).let { if (it < 1) 1.0 else it }
@@ -41,18 +43,38 @@ fun BarChartComposable(
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     )
 
+    val backgroundColor = when (selectedTheme?.id) {
+        "default" -> Color(0xFF1B2D8A)
+        "midnight" -> Color(0xFF1D1B49)
+        "solaris" -> Color(0xFFFFE8A5)
+        "marine" -> Color(0xFF22272E)
+        else -> Color(0xFF1B2D8A)
+    }
+
+    val yLabelColor = when (selectedTheme?.id) {
+        "default", "midnight", "marine" -> Color.White.copy(alpha = 0.7f)
+        "solaris" -> Color.Black.copy(alpha = 0.7f)
+        else -> Color.White.copy(alpha = 0.7f)
+    }
+
+    val titleColor = when (selectedTheme?.id) {
+        "default", "midnight", "marine" -> Color.White
+        "solaris" -> Color.Black
+        else -> Color.White
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFF1327A8).copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+            .background(backgroundColor.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
             .padding(12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Expense", color = Color.White, fontSize = 14.sp)
-            Text("2025", color = Color.White, fontSize = 14.sp)
+            Text("Expense", color = titleColor, fontSize = 14.sp)
+            Text("2025", color = titleColor, fontSize = 14.sp)
         }
 
         Spacer(Modifier.height(8.dp))
@@ -70,7 +92,7 @@ fun BarChartComposable(
                     Text(
                         text = value.toString(),
                         fontSize = 10.sp,
-                        color = Color.White.copy(alpha = 0.7f)
+                        color = yLabelColor
                     )
                 }
             }
@@ -85,7 +107,7 @@ fun BarChartComposable(
                     repeat(yLabels.size) { i ->
                         val y = stepY * i
                         drawLine(
-                            color = Color.White.copy(alpha = 0.2f),
+                            color = titleColor.copy(alpha = 0.2f),
                             start = Offset(0f, y),
                             end = Offset(size.width, y),
                             strokeWidth = 1.dp.toPx()
@@ -108,18 +130,20 @@ fun BarChartComposable(
                                 .clickable { onBarClick(month) }
                                 .weight(1f, false)
                         ) {
+                            val barColor = if (selectedTheme?.id == "solaris") Color(0xFFFFCC4A) else Color(0xFF00C2FF)
+
                             Box(
                                 modifier = Modifier
                                     .height((180.dp * heightFraction).coerceAtLeast(4.dp))
                                     .width(18.dp)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFF00C2FF))
+                                    .background(barColor)
                             )
                             Spacer(Modifier.height(6.dp))
                             Text(
                                 text = if (month == 0) "All" else monthNames.getOrNull(month - 1) ?: "???",
                                 fontSize = 11.sp,
-                                color = Color.White
+                                color = titleColor
                             )
                         }
                     }
@@ -133,7 +157,7 @@ fun BarChartComposable(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            Text("Months", color = Color.White, fontSize = 12.sp)
+            Text("Months", color = titleColor, fontSize = 12.sp)
         }
     }
 }
