@@ -1,5 +1,162 @@
--- Trip Table
-CREATE TABLE trip (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL
+CREATE TABLE expense (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  category TEXT NOT NULL,
+  title TEXT,
+  amount REAL NOT NULL,
+  date TEXT NOT NULL,
+  notes TEXT,
+  isFavoriteTemplate INTEGER NOT NULL DEFAULT 0,
+  planned INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TABLE ThemeEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    isPurchased INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    previewRes TEXT,
+    primaryColor INTEGER,
+    splashText TEXT,
+    price REAL
+);
+
+CREATE TABLE CurrentThemeEntity (
+    id INTEGER NOT NULL PRIMARY KEY DEFAULT 1,
+    themeId TEXT NOT NULL,
+    FOREIGN KEY(themeId) REFERENCES ThemeEntity(id)
+);
+
+INSERT INTO ThemeEntity (id, name, isPurchased, type, previewRes, primaryColor, splashText, price)
+VALUES
+('default', 'Default', 1, 'free', 'bg_default', 4294967295, 'Track easy!', NULL),
+('midnight', 'Midnight', 0, 'paid', 'bg_midnight', 4278190080, 'Dark mode vibes!', 1.99),
+('solaris', 'Solaris', 0, 'paid', 'bg_solaris', 4294956800, 'Shine on!', 2.99),
+('marine', 'Marine', 0, 'paid', 'bg_marine', 4283782485, 'Fresh and cool!', 1.49);
+
+
+totalForMonth:
+SELECT COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 7) = :yearMonth;
+
+totalForYear:
+SELECT COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 4) = :year;
+
+byCategoryForMonth:
+SELECT category, COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 7) = :yearMonth
+GROUP BY category;
+
+recentExpenses:
+SELECT *
+FROM expense
+WHERE planned = 0
+  AND date <= date('now')
+ORDER BY date DESC
+LIMIT :limit;
+
+plannedExpenses:
+SELECT *
+FROM expense
+WHERE planned = 1
+  AND date > date('now')
+ORDER BY date ASC
+LIMIT :limit;
+
+insertExpense:
+INSERT INTO expense(
+  category,
+  title,
+  amount,
+  date,
+  notes,
+  isFavoriteTemplate,
+  planned
+) VALUES (
+  :category,
+  :title,
+  :amount,
+  :date,
+  :notes,
+  :isFavoriteTemplate,
+  :planned
+);
+
+updateExpense:
+UPDATE expense SET
+  category = :category,
+  title = :title,
+  amount = :amount,
+  date = :date,
+  notes = :notes,
+  isFavoriteTemplate = :isFavoriteTemplate,
+  planned = :planned
+WHERE id = :id;
+
+deleteById:
+DELETE FROM expense
+WHERE id = :id;
+
+selectById:
+SELECT * FROM expense WHERE id = :id;
+
+lastInsertRowId:
+SELECT last_insert_rowid();
+
+byCategoryForYear:
+SELECT category, COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+WHERE substr(date, 1, 4) = :year
+GROUP BY category;
+
+totalAll:
+SELECT COALESCE(SUM(amount), 0.0) AS total_
+FROM expense;
+
+byCategoryAll:
+SELECT category, COALESCE(SUM(amount), 0.0) AS total_
+FROM expense
+GROUP BY category;
+
+searchExpenses:
+SELECT *
+FROM expense
+WHERE (:query IS NULL OR (title LIKE '%' || :query || '%' OR notes LIKE '%' || :query || '%'))
+  AND (:categoriesSize = 0 OR (',' || :categories || ',') LIKE '%,' || category || ',%')
+  AND (:dateFrom IS NULL OR date >= :dateFrom)
+  AND (:dateTo IS NULL OR date <= :dateTo)
+  AND (:amountMin IS NULL OR amount >= :amountMin)
+  AND (:amountMax IS NULL OR amount <= :amountMax)
+ORDER BY date DESC, id DESC;
+
+updateFavoriteTemplateFlag:
+UPDATE expense
+SET isFavoriteTemplate = :flag
+WHERE id = :id;
+
+deleteAllExpenses:
+DELETE FROM expense;
+
+getThemes:
+SELECT * FROM ThemeEntity;
+
+getCurrentThemeId:
+SELECT themeId FROM CurrentThemeEntity WHERE id = 1;
+
+insertCurrentTheme:
+INSERT OR REPLACE INTO CurrentThemeEntity(id, themeId) VALUES (1, ?);
+
+purchaseTheme:
+UPDATE ThemeEntity
+SET isPurchased = 1
+WHERE id = ?;
+
+insertTheme:
+INSERT OR REPLACE INTO ThemeEntity(
+    id, name, isPurchased, type, previewRes, primaryColor, splashText, price
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+
