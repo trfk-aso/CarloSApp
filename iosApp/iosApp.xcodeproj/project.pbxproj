@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3937D67F2EC5FAF3002DB8FC /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */; };
-		3937D6802EC5FAF3002DB8FC /* ComposeApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		3937D6832EC5FBC4002DB8FC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D6822EC5FBB8002DB8FC /* libsqlite3.tbd */; };
+		3937D6852EC641A3002DB8FC /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D6842EC641A3002DB8FC /* ComposeApp.framework */; };
+		3937D6862EC641A3002DB8FC /* ComposeApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D6842EC641A3002DB8FC /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -19,7 +19,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				3937D6802EC5FAF3002DB8FC /* ComposeApp.framework in Embed Frameworks */,
+				3937D6862EC641A3002DB8FC /* ComposeApp.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -27,8 +27,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposeApp.framework; path = "../composeApp/build/xcode-frameworks/ComposeApp.framework"; sourceTree = "<group>"; };
 		3937D6822EC5FBB8002DB8FC /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		3937D6842EC641A3002DB8FC /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposeApp.framework; path = "../composeApp/build/xcode-frameworks/ComposeApp.framework"; sourceTree = "<group>"; };
 		4291B981F92A9BC7F896EC94 /* CarloSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarloSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -64,7 +64,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3937D6832EC5FBC4002DB8FC /* libsqlite3.tbd in Frameworks */,
-				3937D67F2EC5FAF3002DB8FC /* ComposeApp.framework in Frameworks */,
+				3937D6852EC641A3002DB8FC /* ComposeApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,8 +74,8 @@
 		3937D67D2EC5FAF2002DB8FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3937D6842EC641A3002DB8FC /* ComposeApp.framework */,
 				3937D6822EC5FBB8002DB8FC /* libsqlite3.tbd */,
-				3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -333,6 +333,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = N4QG4UZ8U9;
 				ENABLE_PREVIEWS = YES;
@@ -348,6 +349,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.carloserlamo.app;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -367,6 +369,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = N4QG4UZ8U9;
 				ENABLE_PREVIEWS = YES;
@@ -382,6 +385,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.carloserlamo.app;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
