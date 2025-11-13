@@ -66,7 +66,7 @@ class ThemeRepositoryImpl(
                 previewRes = "bg_marine",
                 primaryColor = 0xFF4285F5,
                 splashText = "Fresh and cool!",
-                price = 1.49
+                price = 1.99
             )
         }
 

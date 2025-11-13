@@ -31,7 +31,7 @@ VALUES
 ('default', 'Default', 1, 'free', 'bg_default', 4294967295, 'Track easy!', NULL),
 ('midnight', 'Midnight', 0, 'paid', 'bg_midnight', 4278190080, 'Dark mode vibes!', 1.99),
 ('solaris', 'Solaris', 0, 'paid', 'bg_solaris', 4294956800, 'Shine on!', 2.99),
-('marine', 'Marine', 0, 'paid', 'bg_marine', 4283782485, 'Fresh and cool!', 1.49);
+('marine', 'Marine', 0, 'paid', 'bg_marine', 4283782485, 'Fresh and cool!', 1.99);
 
 
 totalForMonth:
