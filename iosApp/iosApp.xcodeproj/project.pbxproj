@@ -6,7 +6,29 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3937D67F2EC5FAF3002DB8FC /* ComposeApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */; };
+		3937D6802EC5FAF3002DB8FC /* ComposeApp.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		3937D6832EC5FBC4002DB8FC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3937D6822EC5FBB8002DB8FC /* libsqlite3.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3937D6812EC5FAF3002DB8FC /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3937D6802EC5FAF3002DB8FC /* ComposeApp.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ComposeApp.framework; path = "../composeApp/build/xcode-frameworks/ComposeApp.framework"; sourceTree = "<group>"; };
+		3937D6822EC5FBB8002DB8FC /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		4291B981F92A9BC7F896EC94 /* CarloSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CarloSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -41,19 +63,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3937D6832EC5FBC4002DB8FC /* libsqlite3.tbd in Frameworks */,
+				3937D67F2EC5FAF3002DB8FC /* ComposeApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		E1BBCCD3757D0F5191D6A353 = {
+		3937D67D2EC5FAF2002DB8FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DBF3CA163EFB588FCB8C38A8 /* Configuration */,
-				4E9C4DB61BF2EAD4849B1543 /* iosApp */,
-				433C69E7F7B94684BD7CC856 /* Products */,
+				3937D6822EC5FBB8002DB8FC /* libsqlite3.tbd */,
+				3937D67E2EC5FAF3002DB8FC /* ComposeApp.framework */,
 			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		433C69E7F7B94684BD7CC856 /* Products */ = {
@@ -62,6 +86,16 @@
 				4291B981F92A9BC7F896EC94 /* CarloSApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E1BBCCD3757D0F5191D6A353 = {
+			isa = PBXGroup;
+			children = (
+				DBF3CA163EFB588FCB8C38A8 /* Configuration */,
+				4E9C4DB61BF2EAD4849B1543 /* iosApp */,
+				3937D67D2EC5FAF2002DB8FC /* Frameworks */,
+				433C69E7F7B94684BD7CC856 /* Products */,
+			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -75,6 +109,7 @@
 				7C3FD80ADDBF73913E3BB9AC /* Sources */,
 				F55F4173E81372D38758B622 /* Frameworks */,
 				544E1016AC28913CEBDEBF00 /* Resources */,
+				3937D6812EC5FAF3002DB8FC /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -299,7 +334,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				DEVELOPMENT_TEAM = N4QG4UZ8U9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -308,13 +343,19 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.carloserlamo.app;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -327,7 +368,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = "${TEAM_ID}";
+				DEVELOPMENT_TEAM = N4QG4UZ8U9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -336,33 +377,39 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.carloserlamo.app;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6C3CFEB8E5A7B303F7DA6882 /* Build configuration list for PBXProject "iosApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0E7B41FA3492F4FB32035BD6 /* Debug */,
-				59BB0060AF3EE2C89BA687E8 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		4BE2D02C316D89A07C583179 /* Build configuration list for PBXNativeTarget "iosApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				BD8EB6B59875DB4A2F178672 /* Debug */,
 				D58FF90713C55F897CCD6346 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6C3CFEB8E5A7B303F7DA6882 /* Build configuration list for PBXProject "iosApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E7B41FA3492F4FB32035BD6 /* Debug */,
+				59BB0060AF3EE2C89BA687E8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

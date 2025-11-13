@@ -1,5 +1,9 @@
 package org.app.carlos.screens.statistics
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,11 +17,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.app.carlos.viewModel.ThemeUiState
 
 @Composable
@@ -40,6 +51,15 @@ fun PieChartComposable(
         else -> Color.White
     }
 
+    val animatedProgress = remember { Animatable(0f) }
+    LaunchedEffect(data) {
+        animatedProgress.snapTo(0f)
+        animatedProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing)
+        )
+    }
+
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
@@ -47,7 +67,7 @@ fun PieChartComposable(
         Canvas(modifier = Modifier.size(160.dp)) {
             var startAngle = -90f
             proportions.forEach { (category, proportion) ->
-                val sweep = proportion * 360f
+                val sweep = proportion * 360f * animatedProgress.value
                 drawArc(
                     color = colors[category] ?: Color.Gray,
                     startAngle = startAngle,

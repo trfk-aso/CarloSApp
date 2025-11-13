@@ -15,6 +15,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -78,47 +79,44 @@ fun BottomNavBar(
         Screen.Favorites
     )
 
-    val containerColor = when (selectedThemeId) {
-        "default" -> Color(0xFF152470)
-        "midnight" -> Color(0xFF090733)
-        "solaris" -> Color(0xFFFFFDF4)
-        "marine" -> Color(0xFF0A0A0A)
-        else -> Color.White
-    }
+    key(selectedThemeId) {
+        val containerColor = when (selectedThemeId) {
+            "default" -> Color(0xFF152470)
+            "midnight" -> Color(0xFF090733)
+            "solaris" -> Color(0xFFFFFDF4)
+            "marine" -> Color(0xFF0A0A0A)
+            else -> Color(0xFF152470)
+        }
 
-    NavigationBar(
-        containerColor = containerColor
-    ) {
-        items.forEach { screen ->
-            val selected = currentRoute == screen.route
-
-            NavigationBarItem(
-                selected = selected,
-                onClick = {
-                    if (!selected) {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+        NavigationBar(containerColor = containerColor) {
+            items.forEach { screen ->
+                val selected = currentRoute == screen.route
+                NavigationBarItem(
+                    selected = selected,
+                    onClick = {
+                        if (!selected) {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
-                    }
-                },
-                icon = {
-                    val iconRes = getIconForScreen(screen, selectedThemeId, selected)
-                    Image(
-                        painter = painterResource(iconRes),
-                        contentDescription = screen.route,
-                        modifier = Modifier.size(60.dp)
+                    },
+                    icon = {
+                        val iconRes = getIconForScreen(screen, selectedThemeId, selected)
+                        Image(
+                            painter = painterResource(iconRes),
+                            contentDescription = screen.route,
+                            modifier = Modifier.size(60.dp)
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = Color.Unspecified,
+                        unselectedIconColor = Color.Unspecified,
+                        indicatorColor = Color.Transparent
                     )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.Unspecified,
-                    unselectedIconColor = Color.Unspecified,
-                    indicatorColor = Color.Transparent
                 )
-            )
+            }
         }
     }
 }

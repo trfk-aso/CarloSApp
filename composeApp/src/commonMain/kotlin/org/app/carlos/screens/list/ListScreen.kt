@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountBalanceWallet
@@ -198,7 +200,8 @@ fun ListScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 ExposedDropdownMenuBox(
@@ -375,20 +378,23 @@ fun ListScreen(
                                         },
                                         label = {
                                             Text(
-                                                category,
-                                                color = if (selectedCategories.contains(category)) chipSelectedTextColor else chipTextColor,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
+                                                text = category,
+                                                color = if (selectedCategories.contains(category))
+                                                    chipSelectedTextColor else chipTextColor,
                                                 fontSize = 16.sp,
-                                                fontWeight = FontWeight.SemiBold
+                                                fontWeight = FontWeight.SemiBold,
+                                                maxLines = 1,
+                                                softWrap = false,
+                                                overflow = TextOverflow.Clip
                                             )
                                         },
                                         modifier = Modifier
-                                            .widthIn(min = 65.dp, max = 110.dp)
-                                            .height(40.dp),
+                                            .height(40.dp)
+                                            .padding(horizontal = 2.dp),
                                         border = BorderStroke(
                                             1.dp,
-                                            if (selectedCategories.contains(category)) chipSelectedColor else chipBorderColor
+                                            if (selectedCategories.contains(category))
+                                                chipSelectedColor else chipBorderColor
                                         ),
                                         colors = FilterChipDefaults.filterChipColors(
                                             containerColor = Color.Transparent,
@@ -809,7 +815,7 @@ fun ListScreen(
                     )
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize().heightIn(max = 600.dp)
                     ) {
                         items(uiState.results, key = { it.id!! }) { expense ->
                             SwipeToDismissItem(

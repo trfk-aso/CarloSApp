@@ -88,6 +88,7 @@ import org.app.carlos.screens.list.formatAmount
 import org.app.carlos.viewModel.HistoryViewModel
 import org.app.carlos.viewModel.HomeViewModel
 import org.app.carlos.viewModel.SettingsViewModel
+import org.app.carlos.viewModel.StatisticsViewModel
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
@@ -98,6 +99,7 @@ fun HistoryScreen(
     navController: NavHostController,
     viewModel: HistoryViewModel = koinInject(),
     homeViewModel: HomeViewModel = koinInject(),
+    statisticsViewModel: StatisticsViewModel = koinInject(),
     settingsViewModel: SettingsViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -292,20 +294,23 @@ fun HistoryScreen(
                                         },
                                         label = {
                                             Text(
-                                                category,
-                                                color = if (selectedCategories.contains(category)) chipSelectedTextColor else chipTextColor,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis,
+                                                text = category,
+                                                color = if (selectedCategories.contains(category))
+                                                    chipSelectedTextColor else chipTextColor,
                                                 fontSize = 16.sp,
-                                                fontWeight = FontWeight.SemiBold
+                                                fontWeight = FontWeight.SemiBold,
+                                                maxLines = 1,
+                                                softWrap = false,
+                                                overflow = TextOverflow.Clip
                                             )
                                         },
                                         modifier = Modifier
-                                            .widthIn(min = 65.dp, max = 110.dp)
-                                            .height(40.dp),
+                                            .height(40.dp)
+                                            .padding(horizontal = 2.dp),
                                         border = BorderStroke(
                                             1.dp,
-                                            if (selectedCategories.contains(category)) chipSelectedColor else chipBorderColor
+                                            if (selectedCategories.contains(category))
+                                                chipSelectedColor else chipBorderColor
                                         ),
                                         colors = FilterChipDefaults.filterChipColors(
                                             containerColor = Color.Transparent,
@@ -758,6 +763,7 @@ fun HistoryScreen(
                                         exp.id?.let {
                                             viewModel.deleteExpense(it)
                                             homeViewModel.refreshData()
+                                            statisticsViewModel.refreshData()
                                         }
                                     }
                                 )

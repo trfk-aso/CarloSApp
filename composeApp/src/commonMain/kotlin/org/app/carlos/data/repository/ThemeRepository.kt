@@ -97,6 +97,10 @@ class ThemeRepositoryImpl(
     }
 
     override suspend fun getCurrentThemeId(): String? {
+        if (_currentThemeId.value == null) {
+            _currentThemeId.value = queries.getCurrentThemeId().executeAsOneOrNull()
+                ?: "default"
+        }
         return _currentThemeId.value
     }
 

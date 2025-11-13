@@ -32,8 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import carlosapp.composeapp.generated.resources.Res
@@ -53,6 +55,7 @@ fun AboutScreen(
 ) {
     val settingsState by settingsViewModel.uiState.collectAsState()
     val selectedTheme = settingsState.themes.firstOrNull { it.isSelected }
+    val uriHandler = LocalUriHandler.current
 
     val backgroundRes = when (selectedTheme?.id) {
         "default" -> Res.drawable.bg_default
@@ -138,10 +141,13 @@ fun AboutScreen(
                             text = "Privacy Policy",
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 color = Color(0xFF4FC3F7),
-                                fontWeight = FontWeight.Medium
+                                fontWeight = FontWeight.Medium,
+                                textDecoration = TextDecoration.Underline
                             ),
                             modifier = Modifier
-                                .clickable { /* TODO: переход */ }
+                                .clickable {
+                                    uriHandler.openUri("https://nextspace.top/C8B6CQ")
+                                }
                                 .padding(vertical = 8.dp)
                         )
                     }

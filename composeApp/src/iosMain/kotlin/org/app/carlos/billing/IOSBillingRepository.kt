@@ -1,5 +1,6 @@
 package org.app.carlos.billing
 
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -18,13 +19,28 @@ import kotlin.collections.forEach
 
 class IOSBillingRepository(
     private val themeRepository: ThemeRepository
-) : NSObject(), BillingRepository, SKProductsRequestDelegateProtocol, SKPaymentTransactionObserverProtocol {
+) : BillingRepository {
+
+    private val delegate = IOSBillingDelegate(themeRepository)
+
+    override suspend fun getThemes(): List<Theme> =
+        themeRepository.getAllThemes()
+
+    override suspend fun purchaseTheme(themeId: String): PurchaseResult =
+        delegate.purchaseTheme(themeId)
+
+    override suspend fun restorePurchases(): PurchaseResult =
+        delegate.restorePurchases()
+}
+
+@OptIn(ExperimentalForeignApi::class)
+class IOSBillingDelegate(
+    private val themeRepository: ThemeRepository
+) : NSObject(), SKProductsRequestDelegateProtocol, SKPaymentTransactionObserverProtocol {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
-
     private val themeProducts = setOf("midnight", "solaris", "marine")
-    private val products: MutableMap<String, SKProduct> = mutableMapOf()
-
+    private val products = mutableMapOf<String, SKProduct>()
     private val purchaseContinuations = mutableMapOf<String, (PurchaseResult) -> Unit>()
 
     init {
@@ -38,33 +54,25 @@ class IOSBillingRepository(
         request.start()
     }
 
-    override suspend fun getThemes(): List<Theme> {
-        return themeRepository.getAllThemes()
-    }
-
-    override suspend fun purchaseTheme(themeId: String): PurchaseResult =
+    suspend fun purchaseTheme(themeId: String): PurchaseResult =
         suspendCancellableCoroutine { continuation ->
             val product = products[themeId]
             if (product == null) {
                 continuation.resume(PurchaseResult.Error("Product not found"))
                 return@suspendCancellableCoroutine
             }
-
             purchaseContinuations[themeId] = { result -> continuation.resume(result) }
-
-            val payment = SKPayment.paymentWithProduct(product)
-            SKPaymentQueue.defaultQueue().addPayment(payment)
+            SKPaymentQueue.defaultQueue().addPayment(SKPayment.paymentWithProduct(product))
         }
 
-    override suspend fun restorePurchases(): PurchaseResult =
+    suspend fun restorePurchases(): PurchaseResult =
         suspendCancellableCoroutine { continuation ->
             purchaseContinuations["restore"] = { result -> continuation.resume(result) }
             SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
         }
 
     override fun productsRequest(request: SKProductsRequest, didReceiveResponse: SKProductsResponse) {
-        val skProducts = didReceiveResponse.products ?: return
-        skProducts.forEach { any ->
+        didReceiveResponse.products?.forEach { any ->
             val product = any as? SKProduct ?: return@forEach
             val id = product.productIdentifier ?: return@forEach
             products[id] = product

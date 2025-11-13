@@ -13,6 +13,7 @@ import kotlinx.datetime.Month
 import org.app.carlos.data.model.Expense
 import org.app.carlos.data.repository.ExpenseRepository
 import org.app.carlos.exporter.FileExporter
+import org.app.carlos.exporter.FileOpener
 import kotlin.collections.LinkedHashMap
 
 data class HistoryUiState(
@@ -28,7 +29,8 @@ data class HistoryUiState(
 )
 
 class HistoryViewModel(
-    private val repository: ExpenseRepository
+    private val repository: ExpenseRepository,
+    private val fileOpener: FileOpener
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HistoryUiState())
@@ -101,7 +103,6 @@ class HistoryViewModel(
             loadHistory()
         }
     }
-
     fun exportHistory(fileExporter: FileExporter) {
         viewModelScope.launch {
             println("Export started")
@@ -115,7 +116,7 @@ class HistoryViewModel(
             val content = buildString {
                 println("Building export content")
                 state.groups.forEach { (ym, expenses) ->
-                    appendLine("${ym}:")
+                    appendLine("$ym:")
                     expenses.forEach { exp ->
                         appendLine("${exp.date} | ${exp.category} | ${exp.title ?: ""} | ${exp.amount} | ${exp.notes ?: ""}")
                         println("Appending expense: ${exp.date} | ${exp.category} | ${exp.amount}")
@@ -126,15 +127,24 @@ class HistoryViewModel(
             }
 
             println("Content built, starting file export")
+
             val filename = "History_${Clock.System.now().toEpochMilliseconds()}.txt"
             val success = fileExporter.exportTextFile(filename, content)
             println("Export result for file '$filename': $success")
+
+            if (success) {
+                try {
+                    fileOpener.openFile(filename)
+                    println("File opened successfully: $filename")
+                } catch (e: Exception) {
+                    println("Error opening file: ${e.message}")
+                }
+            }
 
             onExportResult(success)
             println("Export finished")
         }
     }
-
 }
 
 data class YearMonth(val year: Int, val month: Int) : Comparable<YearMonth> {

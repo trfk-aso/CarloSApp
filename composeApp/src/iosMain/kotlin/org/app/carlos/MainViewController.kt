@@ -16,20 +16,4 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import platform.UIKit.UIViewController
 
-fun MainViewController(): UIViewController {
-
-    startKoin {
-        modules(
-            module {
-                single<ThemeRepository> { ThemeRepositoryImpl(get()) }
-                single<BillingRepository> { IOSBillingRepository(get()) }
-            }
-        )
-    }
-
-    return ComposeUIViewController {
-        val themeRepository: ThemeRepository = getKoin().get()
-        val billingRepository: BillingRepository = getKoin().get()
-        App(themeRepository, billingRepository)
-    }
-}
+fun MainViewController() = ComposeUIViewController { App() }

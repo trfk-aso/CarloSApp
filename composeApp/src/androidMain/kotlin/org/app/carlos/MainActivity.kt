@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import org.app.carlos.billing.AndroidBillingRepository
 import org.app.carlos.data.repository.BillingRepository
 import org.app.carlos.data.repository.ThemeRepository
+import org.app.carlos.exporter.initFileOpener
 import org.koin.mp.KoinPlatform.getKoin
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +23,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        initFileOpener(this)
 
         themeRepository = getKoin().get()
 
@@ -35,10 +38,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            App(
-                themeRepository = themeRepository,
-                billingRepository = billingRepository
-            )
+            App()
         }
     }
 

@@ -69,7 +69,7 @@ fun EmptyListState(
             Image(
                 painter = painterResource(imageRes),
                 contentDescription = null,
-                modifier = Modifier.size(450.dp),
+                modifier = Modifier.size(300.dp),
                 contentScale = ContentScale.Fit
             )
         }

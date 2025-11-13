@@ -1,8 +1,11 @@
 package org.app.carlos.screens.details
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -47,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -180,7 +186,8 @@ fun ExpenseDetailsScreen(
                 modifier = Modifier
                     .padding(paddingValues)
                     .padding(16.dp)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 DetailRow("Amount", "$${uiState.amount}", withArrow = true, textColor = textColor)
@@ -208,6 +215,7 @@ fun ExpenseDetailsScreen(
                         checked = uiState.isTemplate,
                         onCheckedChange = { checked ->
                             viewModel.toggleTemplate(checked)
+                            favoritesViewModel.loadFavorites()
                         },
                         modifier = Modifier.scale(1.3f),
                         colors = SwitchDefaults.colors(
@@ -238,6 +246,10 @@ fun ExpenseDetailsScreen(
 
                 if (uiState.isTemplate) {
                     Spacer(Modifier.height(16.dp))
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isPressed by interactionSource.collectIsPressedAsState()
+                    val alpha by animateFloatAsState(if (isPressed) 0.7f else 1f)
+
                     Button(
                         onClick = {
                             viewModel.saveTemplate()
@@ -245,9 +257,11 @@ fun ExpenseDetailsScreen(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
+                            .height(56.dp)
+                            .graphicsLayer(alpha = alpha),
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = templateButtonColor)
+                        colors = ButtonDefaults.buttonColors(containerColor = templateButtonColor),
+                        interactionSource = interactionSource
                     ) {
                         Text(
                             "Save Template",
@@ -352,28 +366,34 @@ fun DetailRow(
     withArrow: Boolean = false,
     textColor: Color
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(enabled = onClick != null) { onClick?.invoke() }
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(vertical = 12.dp)
     ) {
         Text(
             label,
             style = MaterialTheme.typography.bodyLarge,
-            color = textColor,
-            fontSize = 18.sp,
+            color = textColor.copy(alpha = 0.8f),
+            fontSize = 16.sp,
             fontWeight = FontWeight.Medium
         )
-        Row(verticalAlignment = Alignment.CenterVertically) {
+
+        Spacer(Modifier.height(6.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(
                 value,
                 style = MaterialTheme.typography.bodyLarge,
                 color = textColor,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
             )
             if (withArrow) {
                 Icon(
@@ -384,6 +404,8 @@ fun DetailRow(
                 )
             }
         }
+
+        Spacer(Modifier.height(6.dp))
+        Divider(color = textColor.copy(alpha = 0.3f), thickness = 1.dp)
     }
-    Divider(color = textColor.copy(alpha = 0.3f), thickness = 1.dp)
 }

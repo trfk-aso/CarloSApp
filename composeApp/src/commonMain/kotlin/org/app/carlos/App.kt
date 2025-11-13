@@ -55,10 +55,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun App(
-    themeRepository: ThemeRepository,
-    billingRepository: BillingRepository
-) {
+fun App() {
         val navController = rememberNavController()
         val repository: ExpenseRepository = koinInject()
         val settingsRepository: SettingsRepository = koinInject()
@@ -68,6 +65,8 @@ fun App(
         val historyViewModel: HistoryViewModel = koinInject()
         val searchViewModel: SearchViewModel = koinInject()
         val statisticsViewModel: StatisticsViewModel = koinInject()
+        val themeRepository: ThemeRepository = koinInject()
+        val billingRepository: BillingRepository = koinInject()
 
     val settingsViewModel = remember {
         SettingsViewModel(
@@ -120,7 +119,7 @@ fun App(
             }
             composable(Screen.List.route) { ListScreen(navController, searchViewModel, homeViewModel, settingsViewModel)  }
             composable(Screen.Favorites.route) { FavoritesScreen(navController, favoritesViewModel, settingsViewModel) }
-            composable(Screen.History.route) { HistoryScreen(navController, historyViewModel, homeViewModel, settingsViewModel) }
+            composable(Screen.History.route) { HistoryScreen(navController, historyViewModel, homeViewModel, statisticsViewModel, settingsViewModel) }
             composable(Screen.Statistics.route) { StatisticsScreen(navController, statisticsViewModel, homeViewModel, searchViewModel, settingsViewModel) }
             composable(Screen.Settings.route) {
                 SettingsScreen(

@@ -30,7 +30,7 @@ val viewModule = module {
     }
     single { ListViewModel(get()) }
     single { FavoritesViewModel(get()) }
-    single { HistoryViewModel(get()) }
+    single { HistoryViewModel(get(), get()) }
     single { StatisticsViewModel(get()) }
     single { SettingsViewModel(get(), get(), get(), get()) }
 }

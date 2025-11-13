@@ -1,5 +1,9 @@
 package org.app.carlos.screens.statistics
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,12 +21,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.datetime.Month
@@ -43,38 +52,57 @@ fun BarChartComposable(
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     )
 
-    val backgroundColor = when (selectedTheme?.id) {
-        "default" -> Color(0xFF1B2D8A)
-        "midnight" -> Color(0xFF1D1B49)
-        "solaris" -> Color(0xFFFFE8A5)
-        "marine" -> Color(0xFF22272E)
-        else -> Color(0xFF1B2D8A)
+    val (backgroundColor, yLabelColor, titleColor, barGradient) = when (selectedTheme?.id) {
+        "default" -> Quad(
+            Color(0xFF1B2D8A),
+            Color.White.copy(alpha = 0.6f),
+            Color.White,
+            Brush.verticalGradient(listOf(Color(0xFF4D9FFF), Color(0xFF0063FF)))
+        )
+        "midnight" -> Quad(
+            Color(0xFF1D1B49),
+            Color.White.copy(alpha = 0.6f),
+            Color.White,
+            Brush.verticalGradient(listOf(Color(0xFF7B6AFF), Color(0xFF3A2CC9)))
+        )
+        "solaris" -> Quad(
+            Color(0xFFFFE8A5),
+            Color.Black.copy(alpha = 0.6f),
+            Color.Black,
+            Brush.verticalGradient(listOf(Color(0xFFFFD76A), Color(0xFFFFAC33)))
+        )
+        "marine" -> Quad(
+            Color(0xFF22272E),
+            Color.White.copy(alpha = 0.6f),
+            Color.White,
+            Brush.verticalGradient(listOf(Color(0xFF37FFE6), Color(0xFF007F8C)))
+        )
+        else -> Quad(
+            Color(0xFF1B2D8A),
+            Color.White.copy(alpha = 0.6f),
+            Color.White,
+            Brush.verticalGradient(listOf(Color(0xFF4D9FFF), Color(0xFF0063FF)))
+        )
     }
 
-    val yLabelColor = when (selectedTheme?.id) {
-        "default", "midnight", "marine" -> Color.White.copy(alpha = 0.7f)
-        "solaris" -> Color.Black.copy(alpha = 0.7f)
-        else -> Color.White.copy(alpha = 0.7f)
-    }
-
-    val titleColor = when (selectedTheme?.id) {
-        "default", "midnight", "marine" -> Color.White
-        "solaris" -> Color.Black
-        else -> Color.White
+    val animatedProgress = remember { Animatable(0f) }
+    LaunchedEffect(data) {
+        animatedProgress.snapTo(0f)
+        animatedProgress.animateTo(1f, animationSpec = tween(1000, easing = FastOutSlowInEasing))
     }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(backgroundColor.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+            .background(backgroundColor.copy(alpha = 0.25f), RoundedCornerShape(16.dp))
             .padding(12.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Expense", color = titleColor, fontSize = 14.sp)
-            Text("2025", color = titleColor, fontSize = 14.sp)
+            Text("Expense", color = titleColor, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text("2025", color = titleColor, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
 
         Spacer(Modifier.height(8.dp))
@@ -82,7 +110,7 @@ fun BarChartComposable(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
+                .height(240.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
@@ -97,17 +125,15 @@ fun BarChartComposable(
                 }
             }
 
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(8.dp))
 
-            Box(
-                modifier = Modifier.weight(1f)
-            ) {
+            Box(modifier = Modifier.weight(1f)) {
                 Canvas(Modifier.matchParentSize()) {
                     val stepY = size.height / yLabels.size
                     repeat(yLabels.size) { i ->
                         val y = stepY * i
                         drawLine(
-                            color = titleColor.copy(alpha = 0.2f),
+                            color = titleColor.copy(alpha = 0.15f),
                             start = Offset(0f, y),
                             end = Offset(size.width, y),
                             strokeWidth = 1.dp.toPx()
@@ -118,30 +144,42 @@ fun BarChartComposable(
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 6.dp),
+                        .padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.Bottom
                 ) {
                     data.forEach { (month, value) ->
-                        val heightFraction = (value / (yLabels.maxOrNull() ?: 1)).toFloat()
+                        val heightFraction = ((value / max).toFloat() * animatedProgress.value).coerceIn(0f, 1f)
+
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Bottom,
                             modifier = Modifier
                                 .clickable { onBarClick(month) }
                                 .weight(1f, false)
                         ) {
-                            val barColor = if (selectedTheme?.id == "solaris") Color(0xFFFFCC4A) else Color(0xFF00C2FF)
+                            AnimatedVisibility(visible = animatedProgress.value > 0.7f) {
+                                Text(
+                                    text = "${value.toInt()}",
+                                    fontSize = 11.sp,
+                                    color = titleColor.copy(alpha = 0.9f),
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
 
                             Box(
                                 modifier = Modifier
-                                    .height((180.dp * heightFraction).coerceAtLeast(4.dp))
-                                    .width(18.dp)
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(barColor)
+                                    .height((180.dp * heightFraction).coerceAtLeast(6.dp))
+                                    .width(22.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(barGradient)
+                                    .shadow(5.dp, RoundedCornerShape(8.dp))
                             )
+
                             Spacer(Modifier.height(6.dp))
+
                             Text(
-                                text = if (month == 0) "All" else monthNames.getOrNull(month - 1) ?: "???",
+                                text = if (month == 0) "All" else monthNames.getOrNull(month - 1) ?: "?",
                                 fontSize = 11.sp,
                                 color = titleColor
                             )
@@ -161,3 +199,9 @@ fun BarChartComposable(
         }
     }
 }
+
+data class Quad<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
+operator fun <A, B, C, D> Quad<A, B, C, D>.component1() = a
+operator fun <A, B, C, D> Quad<A, B, C, D>.component2() = b
+operator fun <A, B, C, D> Quad<A, B, C, D>.component3() = c
+operator fun <A, B, C, D> Quad<A, B, C, D>.component4() = d
