@@ -3,6 +3,7 @@ workflows:
     name: iOS Build
     max_build_duration: 120
     instance_type: mac_mini_m2
+
     integrations:
       app_store_connect: CarloSApp
 
@@ -15,7 +16,6 @@ workflows:
         XCODE_PROJECT: "iosApp.xcodeproj"
         XCODE_SCHEME: "iosApp"
         APP_ID: 6754875098
-
         GRADLE_OPTS: "-Xmx6144m -Dorg.gradle.jvmargs=-Xmx6144m -Dfile.encoding=UTF-8"
 
     scripts:
@@ -23,8 +23,12 @@ workflows:
         script: |
           keychain initialize
 
-      - name: Fetch signing files
+      - name:  Force regenerate provisioning profiles
         script: |
+          echo ">>> Removing old provisioning profiles"
+          app-store-connect delete-provisioning-profiles $BUNDLE_ID || true
+
+          echo ">>> Creating new provisioning profiles"
           app-store-connect fetch-signing-files $BUNDLE_ID --type IOS_APP_STORE --create
 
       - name: Add certificates
@@ -34,22 +38,24 @@ workflows:
       - name: Set up code signing settings
         script: |
           cd $CM_BUILD_DIR/iosApp
+          echo ">>> Applying provisioning profiles to Xcode"
           xcode-project use-profiles
 
       - name: Build KMM framework
         script: |
-          cd $CM_BUILD_DIR
           echo ">>> Building Kotlin Multiplatform framework"
+          cd $CM_BUILD_DIR
           export GRADLE_OPTS="-Xmx6144m -Dkotlin.daemon.jvm.options=-Xmx6144m"
-          ./gradlew :composeApp:packForXcode --no-daemon --stacktrace \
+          ./gradlew :composeApp:packForXcode \
+            --no-daemon --stacktrace \
             -Pkotlin.native.cacheKind=none \
             -Pkotlin.native.binary.memoryModel=experimental \
             -Porg.gradle.jvmargs="-Xmx6144m"
 
       - name: Build iOS app
         script: |
+          echo ">>> Building iOS IPA"
           cd $CM_BUILD_DIR/iosApp
-          echo ">>> Building iOS .ipa with Xcode"
           xcode-project build-ipa \
             --project "$XCODE_PROJECT" \
             --scheme "$XCODE_SCHEME"
