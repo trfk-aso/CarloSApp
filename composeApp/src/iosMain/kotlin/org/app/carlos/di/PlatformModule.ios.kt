@@ -5,12 +5,14 @@ import org.app.carlos.data.DatabaseDriverFactory
 import org.app.carlos.data.IOSDatabaseDriverFactory
 import org.app.carlos.data.repository.BillingRepository
 import org.app.carlos.exporter.FileOpener
+import org.app.carlos.network.NetworkViewModel
 import org.koin.dsl.module
 
 actual val platformModule = module {
     single<DatabaseDriverFactory> { IOSDatabaseDriverFactory() }
     single<BillingRepository> { IOSBillingRepository(get()) }
     single<FileOpener> { FileOpener() }
+    single { NetworkViewModel() }
 }
 object KoinStarter {
     fun start() = initKoin()

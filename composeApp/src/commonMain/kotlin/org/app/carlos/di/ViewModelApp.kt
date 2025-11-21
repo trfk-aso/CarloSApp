@@ -19,7 +19,7 @@ import org.koin.dsl.module
 
 val viewModule = module {
     single { Settings() }
-    viewModelOf(::SplashViewModel)
+    viewModel { SplashViewModel(get(), get()) }
     single { HomeViewModel(get()) }
     viewModel { (savedStateHandle: SavedStateHandle) ->
         AddEditExpenseViewModel(get(), savedStateHandle)

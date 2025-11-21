@@ -1,12 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationDelegateClassName</key>
-	<string>org.app.carlos.AppDelegate</string>
-	<key>UIApplicationSupportsMultipleScenes</key>
-	<false/>
-</dict>
+    <dict>
+        <key>CADisableMinimumFrameDurationOnPhone</key>
+        <true/>
+
+        <key>UIApplicationDelegateClassName</key>
+        <string>org.app.carlos.AppDelegate</string>
+
+        <key>UIApplicationSupportsMultipleScenes</key>
+        <false/>
+
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>remote-notification</string>
+        </array>
+
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+            <key>NSAllowsArbitraryLoadsInWebContent</key>
+            <true/>
+        </dict>
+
+        <key>WKWebViewDeveloperExtrasEnabled</key>
+        <true/>
+
+    </dict>
 </plist>
