@@ -31,12 +31,10 @@ class SplashViewModel(
         val saved = remoteConfig.getSavedUrl()
         println("🟣 [Splash] Step 1: savedUrl = $saved")
 
-        // ---- FIX #1 ----
-        // Если saveUrl ещё не готов – ПОКА НЕ показываем WebScreen
         if (!saved.isNullOrBlank()) {
             println("🟢 [Splash] Saved URL FOUND → show web → $saved")
 
-            delay(100) // 👈 гарантируем, что Compose успеет перестроиться
+            delay(100)
             _uiState.value = SplashUiState.ShowWeb(saved)
             return
         }
@@ -54,8 +52,6 @@ class SplashViewModel(
                 remoteConfig.saveUrl(fetchedUrl)
                 settings.setFirstLaunch(false)
 
-                // ---- FIX #2 ----
-                // Даём время state Flow обновиться → тогда WebScreen не загрузится преждевременно
                 delay(200)
 
                 println("🟢 [Splash] Loaded first URL → $fetchedUrl")
