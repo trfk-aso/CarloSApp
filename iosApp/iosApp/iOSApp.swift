@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 import ComposeApp
 
 @main
@@ -19,11 +20,19 @@ struct iOSApp: App {
 }
 
 class AppDelegate: NSObject, UIApplicationDelegate {
+
+    var purchaseIntentObserver: PurchaseIntentObserver?
+
     func application(
         _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+        didFinishLaunchingWithOptions launchOptions: UIApplication.LaunchOptionsKey? = nil
     ) -> Bool {
 
+        SKPaymentQueue.default().add(IOSPromotionBridge.shared)
+
+        purchaseIntentObserver = PurchaseIntentObserver()
+
+        print("⚡ PurchaseIntentObserver initialized")
         return true
     }
 }
